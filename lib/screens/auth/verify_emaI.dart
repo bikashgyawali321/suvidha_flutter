@@ -1,22 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:suvidha/services/backend.dart';
 import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 
 import '../../widgets/custom_button.dart';
 
 class EmailVerificationProvider extends ChangeNotifier {
+  final String fullname;
+  final String email;
+  final String password;
+  final double phoneNo;
+  final BuildContext context;
+  late BackendService _backendService;
+  EmailVerificationProvider(
+      {required this.fullname,
+      required this.email,
+      required this.password,
+      required this.phoneNo,
+      required this.context})
+      : _backendService = Provider.of<BackendService>(context);
+
+  bool isEmailVerified = false;
   Future<void> verifyEmail() async {
     // todo
     notifyListeners();
   }
+
   Future<void> resendVerificationEmail() async {
     //todo
     notifyListeners();
   }
+
   Future<void> registerUser() async {
     //todo
     notifyListeners();
-  }s
+  }
 }
 
 class EmailVerification extends StatelessWidget {
@@ -25,24 +43,31 @@ class EmailVerification extends StatelessWidget {
       required this.fullname,
       required this.email,
       required this.password,
-      required this.phoneNo});
+      required this.phoneNo,
+      required this.context});
   final String fullname;
   final String email;
   final String password;
   final double phoneNo;
+  final BuildContext context;
   static Future<T?> show<T>(BuildContext context) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const EmailVerification(
-          fullname: '', email: '', password: '', phoneNo: 0),
+      builder: (context) => EmailVerification(
+          fullname: '', email: '', password: '', phoneNo: 0, context: context),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => EmailVerificationProvider(),
+      create: (context) => EmailVerificationProvider(
+          email: email,
+          fullname: fullname,
+          password: password,
+          phoneNo: phoneNo,
+          context: context),
       child: Consumer<EmailVerificationProvider>(
         builder: (context, provider, child) {
           return Container(
