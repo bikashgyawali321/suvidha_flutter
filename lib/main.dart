@@ -7,8 +7,8 @@ import 'package:suvidha/screens/splash.dart';
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/home/profile.dart';
-import 'screens/login.dart';
-import 'screens/register.dart';
+import 'screens/auth/login.dart';
+import 'screens/auth/register.dart';
 import 'services/backend.dart';
 import 'services/custom_hive.dart';
 

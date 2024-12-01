@@ -5,7 +5,7 @@ import 'package:suvidha/providers/auth_provider.dart';
 import 'package:suvidha/screens/bottom_sheets/forgot_password_sheet.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 
-import '../providers/theme_provider.dart';
+import '../../providers/theme_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:suvidha/models/user.dart';
 import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/services/backend.dart';
-import '../widgets/custom_button.dart';
+import '../../widgets/custom_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
