@@ -6,18 +6,36 @@ import '../../widgets/custom_button.dart';
 
 class EmailVerificationProvider extends ChangeNotifier {
   Future<void> verifyEmail() async {
-    // Add your code here
+    // todo
     notifyListeners();
   }
+  Future<void> resendVerificationEmail() async {
+    //todo
+    notifyListeners();
+  }
+  Future<void> registerUser() async {
+    //todo
+    notifyListeners();
+  }s
 }
 
 class EmailVerification extends StatelessWidget {
-  const EmailVerification({super.key});
+  const EmailVerification(
+      {super.key,
+      required this.fullname,
+      required this.email,
+      required this.password,
+      required this.phoneNo});
+  final String fullname;
+  final String email;
+  final String password;
+  final double phoneNo;
   static Future<T?> show<T>(BuildContext context) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
-      builder: (context) => const EmailVerification(),
+      builder: (context) => const EmailVerification(
+          fullname: '', email: '', password: '', phoneNo: 0),
     );
   }
 
