@@ -42,7 +42,6 @@ GoRouter _router = GoRouter(routes: [
     path: '/home',
     builder: (context, state) => HomeScreen(),
   ),
-
   GoRoute(
     path: '/login',
     builder: (context, state) => LoginScreen(),
@@ -51,7 +50,6 @@ GoRouter _router = GoRouter(routes: [
     path: '/register',
     builder: (context, state) => RegisterScreen(),
   ),
-
   GoRoute(path: '/profile', builder: (context, state) => Profile()),
 ]);
 
@@ -187,7 +185,6 @@ class MyApp extends StatelessWidget {
             elevation: 0,
             centerTitle: false,
             color: Colors.blueGrey[600],
-            
           )),
       routerConfig: _router,
       debugShowCheckedModeBanner: false,

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
-import 'package:suvidha/providers/auth_provider.dart';
 import 'package:suvidha/screens/bottom_sheets/forgot_password_sheet.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 
@@ -19,27 +17,27 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obsecureText = true;
   bool loading = false;
-  late AuthProvider _authProvider;
-  _login() async {
-    if (!(_formKey.currentState?.validate() ?? false)) return;
-    setState(() {
-      loading = true;
-    });
-    await _authProvider.login(email: username, password: password).then((e) {
-      context.go('/splash');
-    }).catchError((e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    }).whenComplete(() {
-      setState(() {
-        loading = false;
-      });
-    });
-  }
+  // late AuthProvider _authProvider;
+  // _login() async {
+  //   if (!(_formKey.currentState?.validate() ?? false)) return;
+  //   setState(() {
+  //     loading = true;
+  //   });
+  //   await _authProvider.login(email: username, password: password).then((e) {
+  //     context.go('/splash');
+  //   }).catchError((e) {
+  //     ScaffoldMessenger.of(context)
+  //         .showSnackBar(SnackBar(content: Text(e.toString())));
+  //   }).whenComplete(() {
+  //     setState(() {
+  //       loading = false;
+  //     });
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
-    _authProvider = Provider.of<AuthProvider>(context);
+    // _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: primaryDark,
       body: SafeArea(
@@ -146,7 +144,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                             return null;
                           },
-                          onFieldSubmitted: (value) => _login(),
+                          // onFieldSubmitted: (value) => _login(),
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -154,14 +152,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             TextButton(
                                 onPressed: () {
                                   // context.push('/forgotPassword');
-                                  ForgotPasswordSheet.show(context);  
+                                  ForgotPasswordSheet.show(context);
                                 },
                                 child: Text('Forgot password?'))
                           ],
                         ),
                         CustomButton(
                           label: 'Login',
-                          onPressed: _login,
+                          onPressed: null,
                           loading: loading,
                         ),
                         TextButton(

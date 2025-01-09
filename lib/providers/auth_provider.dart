@@ -13,14 +13,14 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider(this.context)
       : _service = Provider.of<BackendService>(context, listen: false);
 
-  Future<void> login({required String email, required String password}) async {
-    loading = true;
-    notifyListeners();
-    final response = await _service.login(email: email, password: password);
+  // Future<void> login({required String email, required String password}) async {
+  //   loading = true;
+  //   notifyListeners();
+  //   // final response = await _service.loginUser(email, password);
 
-    if (response.error == null) {
-      //TODO:save token
-      notifyListeners();
-    }
-  }
+  //   // if (response.statye) {
+  //   //   //TODO:save token
+  //   //   notifyListeners();
+  //   // }
+  // }
 }
