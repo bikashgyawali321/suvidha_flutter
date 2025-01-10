@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import 'package:simple_animations/simple_animations.dart';
-import 'package:suvidha/models/auth_token.dart';
+import 'package:suvidha/models/auth_models/auth_token.dart';
 import 'package:suvidha/providers/auth_provider.dart';
 
 import '../providers/theme_provider.dart';
@@ -20,31 +20,25 @@ class SplashProvider extends ChangeNotifier {
   Future<void> handleRouting() async {
     loading = true;
     notifyListeners();
-
+    await Future.delayed(const Duration(seconds: 7));
     // Get auth token from Hive
-    AuthToken? authToken = context.read<CustomHive>().getAuthToken();
+    AuthToken? authToken = CustomHive().getAuthToken();
 
     if (authToken == null) {
       // If token is null, navigate to login
-      if (context.mounted) {
-        loading = false;
-        notifyListeners();
-        context.go('/login');
-      }
+      loading = false;
+      notifyListeners();
+      context.go('/login');
     } else {
+      // Fetch user details if token exists
       try {
         await authProvider.fetchUserDetails();
-        if (context.mounted) {
-          loading = false;
-          notifyListeners();
-          context.go('/home');
-        }
+        context.go('/home');
+        loading = false;
+        notifyListeners();
       } catch (e) {
-        if (context.mounted) {
-          loading = false;
-          notifyListeners();
-          context.go('/login');
-        }
+        await Future.delayed(const Duration(seconds: 5));
+        handleRouting();
       }
     }
   }

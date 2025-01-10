@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:suvidha/models/auth_models/loginRequest.dart';
-import 'package:suvidha/screens/bottom_sheets/forgot_password_sheet.dart';
-import 'package:suvidha/services/backend.dart';
+import 'package:suvidha/models/auth_models/login_request.dart';
+import 'package:suvidha/screens/auth/bottomsheets/forgot_password_sheet.dart';
+import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 
+import '../../models/auth_models/auth_token.dart';
 import '../../providers/theme_provider.dart';
 
 class LoginProvider extends ChangeNotifier {
   final BuildContext context;
   bool loading = false;
-  late BackendService _backendService;
+  late AuthService _backendService;
   bool _obsecureText = true;
   LoginRequest request = LoginRequest(email: '', password: '');
   final _formKey = GlobalKey<FormState>();
   LoginProvider(this.context)
-      : _backendService = Provider.of<BackendService>(context);
+      : _backendService = Provider.of<AuthService>(context);
 
   //void toggle visiblitity of password
   void toggleVisibility() {
@@ -29,15 +31,16 @@ class LoginProvider extends ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    await _backendService.loginUser(request).then((e) {
-      context.go('/splash');
-    }).catchError((e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.toString())));
-    }).whenComplete(() {
-      loading = false;
-      notifyListeners();
-    });
+    final response = await _backendService.loginUser(request);
+    if (response.data != null) {
+      AuthToken token = AuthToken.fromJson(response.data!);
+      await CustomHive().saveAuthToken(token);
+      context.go('/');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(response.message),
+      ));
+    }
   }
 }
 

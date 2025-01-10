@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:suvidha/models/user.dart';
-import 'package:suvidha/services/backend.dart';
+import 'package:suvidha/models/auth_models/user_model.dart';
+import 'package:suvidha/services/auth_service.dart';
 
 import '../models/backend_response.dart';
 
 class AuthProvider extends ChangeNotifier {
-  User? user;
-  final BackendService service;
+  UserModel? user;
+  final AuthService service;
   final BuildContext context;
 
   bool loading = false;
 
   AuthProvider(this.context)
-      : service = Provider.of<BackendService>(context, listen: false);
+      : service = Provider.of<AuthService>(context, listen: false);
   String? error;
 
   // Fetch user details from the backend
@@ -24,16 +24,12 @@ class AuthProvider extends ChangeNotifier {
     try {
       BackendResponse response = await service.getUserDetails();
 
-      if (response.isError) {
+      if (response.data != null) {
+        user = UserModel.fromJson(response.data);
+        debugPrint("User details: ${user!.name}");
+      } else {
         error = response.message;
         notifyListeners();
-
-        debugPrint("Error fetching user details: ${response.message}");
-      } else if (response.data != null) {
-        user = User.fromJSON(response.data);
-        notifyListeners();
-      } else {
-        debugPrint("No user data received from the backend.");
       }
     } catch (e) {
       debugPrint("Exception while fetching user details: $e");
@@ -42,4 +38,6 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  //function to refresh the auth token
 }

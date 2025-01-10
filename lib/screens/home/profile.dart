@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:suvidha/screens/auth/bottomsheets/logout.dart';
 import 'package:suvidha/screens/bottom_sheets/change_theme_bottom_sheet.dart';
 
 import '../../providers/auth_provider.dart';
 import '../../providers/theme_provider.dart';
+import '../auth/bottomsheets/change_password.dart';
 
 class Profile extends StatelessWidget {
   const Profile({super.key});
@@ -52,7 +54,9 @@ class Profile extends StatelessWidget {
             ListTile(
               title: const Text('Change Password'),
               leading: const Icon(Icons.password),
-              onTap: () {},
+              onTap: () {
+                ChangePassword.show(context);
+              },
             ),
             const Divider(),
             ListTile(
@@ -87,7 +91,9 @@ class Profile extends StatelessWidget {
             ListTile(
               title: const Text('Logout'),
               leading: const Icon(Icons.logout),
-              onTap: () {},
+              onTap: () async {
+                LogoutScreen.show(context);
+              },
             ),
           ],
         )));

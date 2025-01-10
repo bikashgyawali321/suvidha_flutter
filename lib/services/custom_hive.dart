@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:suvidha/models/auth_token.dart';
+import 'package:suvidha/models/auth_models/auth_token.dart';
 
 class CustomHive {
   CustomHive._internal();
@@ -18,14 +18,21 @@ class CustomHive {
 
   //save auth tokens
   Future<void> saveAuthToken(AuthToken token) async {
-    return _box.put('auth_token', jsonEncode(token));
+    return await _box.put('auth_token', jsonEncode(token.toJson()));
   }
 
   //get auth tokens
   AuthToken? getAuthToken() {
     final token = _box.get('auth_token');
     if (token == null) return null;
-    return AuthToken.fromJson(jsonDecode(token));
+    final decodedToken = jsonDecode(token);
+
+    return AuthToken.fromJson(decodedToken);
+  }
+
+  //delete auth tokens
+  Future<void> deleteToken() async {
+    return await _box.delete('auth_token');
   }
 
   //save theme mode
