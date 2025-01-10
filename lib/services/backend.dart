@@ -4,8 +4,16 @@ import 'package:suvidha/models/auth_models/loginRequest.dart';
 import 'package:suvidha/models/auth_models/registerRequest.dart';
 import 'package:suvidha/models/backend_response.dart';
 
+import '../models/auth_token.dart';
+import 'custom_hive.dart';
+
 class BackendService extends ChangeNotifier {
-  final Dio _dio = Dio(BaseOptions(baseUrl: "http://127.0.0.1:4000/api"));
+  final Dio _dio = Dio(BaseOptions(
+      baseUrl: "http://127.0.0.1:4000/api",
+      headers: {"Content-Type": "application/json"}));
+
+  //initialize custom hive to save the token
+  CustomHive customHive = CustomHive();
 
   //register user
   Future<BackendResponse> registerUser(RegisterRequest request) async {
@@ -14,7 +22,15 @@ class BackendService extends ChangeNotifier {
         '/auth/registerUser',
         data: request.toJson(),
       );
-      return BackendResponse.fromJson(response.data);
+      debugPrint("Response : ${response.toString()}");
+      if (response.statusCode == 200) {
+        return BackendResponse.fromJson(response.data);
+      } else {
+        return BackendResponse(
+          title: 'Error',
+          message: response.extra["message"] ?? 'Unknown error',
+        );
+      }
     } catch (e) {
       debugPrint("Error in registering User :${e.toString()}");
 
@@ -24,16 +40,35 @@ class BackendService extends ChangeNotifier {
 
   // login
 
-  Future<BackendResponse> loginUser(LoginRequest request, String password) async {
+  Future<BackendResponse> loginUser(LoginRequest request) async {
     try {
       Response response = await _dio.post(
         '/auth/login',
         data: request.toJson(),
       );
-      return BackendResponse.fromJson(response.data);
+
+      BackendResponse backendResponse = BackendResponse.fromJson(response.data);
+
+      if (backendResponse.isError) {
+        return backendResponse;
+      }
+
+      // If successful, map the token data to AuthToken
+      if (backendResponse.data != null) {
+        AuthToken authToken = AuthToken.fromJson(backendResponse.data);
+        await customHive.saveAuthToken(authToken);
+
+        return BackendResponse.fromJson({
+          'title': 'success',
+          'message': 'Login successful',
+          'data': authToken,
+        });
+      } else {
+        throw Exception('Tokens not found in the response data');
+      }
     } catch (e) {
-      debugPrint("Error while logging in :${e.toString()}");
-      throw Exception('Unable to login ');
+      debugPrint("Error while logging in: ${e.toString()}");
+      throw Exception('Unable to login');
     }
   }
 
@@ -185,7 +220,6 @@ class BackendService extends ChangeNotifier {
   Future<BackendResponse> getUserDetails() async {
     try {
       Response response = await _dio.get('/auth/me');
-
       return BackendResponse.fromJson(response.data);
     } catch (e) {
       debugPrint("Error while getting user details :${e.toString()}");

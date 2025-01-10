@@ -1,13 +1,11 @@
 class AuthToken {
-  final String accessToken;
-  final String refreshToken;
-  final Map<String, dynamic>? result;
-  final Map<String, dynamic>? error;
+  final String? accessToken;
+  final String? refreshToken;
+  final String? error;
 
   AuthToken({
-    required this.accessToken,
-    required this.refreshToken,
-    this.result,
+    this.accessToken,
+    this.refreshToken,
     this.error,
   });
 
@@ -15,13 +13,7 @@ class AuthToken {
     return AuthToken(
       accessToken: json['accessToken'],
       refreshToken: json['refreshToken'],
+      error: json['error'] ?? '',
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'accessToken': accessToken,
-      'refreshToken': refreshToken,
-    };
   }
 }

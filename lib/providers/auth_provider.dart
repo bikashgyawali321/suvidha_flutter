@@ -3,24 +3,43 @@ import 'package:provider/provider.dart';
 import 'package:suvidha/models/user.dart';
 import 'package:suvidha/services/backend.dart';
 
+import '../models/backend_response.dart';
+
 class AuthProvider extends ChangeNotifier {
-  final BuildContext context;
   User? user;
-  final BackendService _service;
+  final BackendService service;
+  final BuildContext context;
 
   bool loading = false;
 
   AuthProvider(this.context)
-      : _service = Provider.of<BackendService>(context, listen: false);
+      : service = Provider.of<BackendService>(context, listen: false);
+  String? error;
 
-  // Future<void> login({required String email, required String password}) async {
-  //   loading = true;
-  //   notifyListeners();
-  //   // final response = await _service.loginUser(email, password);
+  // Fetch user details from the backend
+  Future<void> fetchUserDetails() async {
+    loading = true;
+    notifyListeners();
 
-  //   // if (response.statye) {
-  //   //   //TODO:save token
-  //   //   notifyListeners();
-  //   // }
-  // }
+    try {
+      BackendResponse response = await service.getUserDetails();
+
+      if (response.isError) {
+        error = response.message;
+        notifyListeners();
+
+        debugPrint("Error fetching user details: ${response.message}");
+      } else if (response.data != null) {
+        user = User.fromJSON(response.data);
+        notifyListeners();
+      } else {
+        debugPrint("No user data received from the backend.");
+      }
+    } catch (e) {
+      debugPrint("Exception while fetching user details: $e");
+    } finally {
+      loading = false;
+      notifyListeners();
+    }
+  }
 }

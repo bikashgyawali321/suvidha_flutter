@@ -1,19 +1,21 @@
 class BackendResponse {
+  final String title;
   final String message;
-  final int status;
   final dynamic data;
 
   BackendResponse({
+    required this.title,
     required this.message,
-    required this.status,
     this.data,
   });
 
   factory BackendResponse.fromJson(Map<String, dynamic> json) {
     return BackendResponse(
+      title: json['title'] ?? '',
       message: json['message'] ?? '',
-      status: json['status'] ?? 0,
-      data: json['data'],
+      data: json['data'], // This is optional and may be null
     );
   }
+
+  bool get isError => title == 'error';
 }

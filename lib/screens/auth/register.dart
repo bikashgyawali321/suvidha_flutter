@@ -9,20 +9,20 @@ import 'package:suvidha/widgets/custom_button.dart';
 class RegisterProvider extends ChangeNotifier {
   final BuildContext context;
   RegisterProvider({required this.context})
-      : _backendService = Provider.of<BackendService>(context);
+      : backendService = Provider.of<BackendService>(context);
   bool loading = false;
   num otp = 0;
 
-  late BackendService _backendService;
+  late BackendService backendService;
   RegisterRequest request = RegisterRequest(
     email: '',
     name: '',
     password: '',
-    phoneNumber: 0,
+    phoneNumber: '',
   );
   bool obsecureText = true;
   final _formKey = GlobalKey<FormState>();
-  final PageController controller = PageController();
+  final PageController controller = PageController(initialPage: 0);
   //method to toggle visibility of password
   void toggleVisibility() {
     obsecureText = !obsecureText;
@@ -33,17 +33,29 @@ class RegisterProvider extends ChangeNotifier {
   Future<void> registerUser() async {
     loading = true;
     notifyListeners();
+
     if (!_formKey.currentState!.validate()) {
       loading = false;
       notifyListeners();
       return;
     }
+
     try {
-      final response = await _backendService.registerUser(request);
-      if (response.status == 200) {
-        controller.nextPage(
-            duration: const Duration(milliseconds: 500), curve: Curves.easeIn);
-        notifyListeners();
+      final response = await backendService.registerUser(request);
+
+      if (response.data != null) {
+        loading = false;
+
+        // Navigate to the next page
+        // if (controller.page == 0) {
+        //   await controller.animateToPage(
+        //     1,
+        //     duration: const Duration(milliseconds: 500),
+        //     curve: Curves.easeIn,
+        //   );
+        // }
+        controller.jumpToPage(1);
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.message),
@@ -59,8 +71,16 @@ class RegisterProvider extends ChangeNotifier {
         );
       }
     } catch (e) {
-      debugPrint("Error in registering User :${e.toString()}");
+      debugPrint("Error in registering User: ${e.toString()}");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Something went wrong. Please try again later.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
+
     loading = false;
     notifyListeners();
   }
@@ -69,8 +89,8 @@ class RegisterProvider extends ChangeNotifier {
   Future<void> verifyEmail() async {
     try {
       final response =
-          await _backendService.verifyEmail(email: request.email, otp: otp);
-      if (response.status == 200) {
+          await backendService.verifyEmail(email: request.email, otp: otp);
+      if (response.data != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.message),
@@ -96,8 +116,8 @@ class RegisterProvider extends ChangeNotifier {
   Future<void> resendVerificationEmail() async {
     try {
       final response =
-          await _backendService.resendVerificationEmail(email: request.email);
-      if (response.status == 200) {
+          await backendService.resendVerificationEmail(email: request.email);
+      if (response.data != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(response.message),
@@ -134,6 +154,7 @@ class RegisterScreen extends StatelessWidget {
               child: PageView.builder(
                   itemCount: 2,
                   controller: provider.controller,
+                  physics: const NeverScrollableScrollPhysics(),
                   itemBuilder: (context, index) {
                     if (index == 0) {
                       return SingleChildScrollView(
@@ -215,8 +236,8 @@ class RegisterScreen extends StatelessWidget {
                                       decoration: const InputDecoration(
                                           labelText: 'Phone Number'),
                                       maxLength: 10,
-                                      onChanged: (value) => provider.request
-                                          .phoneNumber = double.parse(value),
+                                      onChanged: (value) =>
+                                          provider.request.phoneNumber = value,
                                       keyboardType: TextInputType.phone,
                                       validator: (value) {
                                         if (value == null || value.isEmpty) {
@@ -241,7 +262,7 @@ class RegisterScreen extends StatelessWidget {
                                               ? Icons.visibility_off
                                               : Icons.visibility),
                                           onPressed: () =>
-                                              provider.toggleVisibility,
+                                              provider.toggleVisibility(),
                                         ),
                                       ),
                                       obscureText: provider.obsecureText,

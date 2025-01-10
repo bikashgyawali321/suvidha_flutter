@@ -2,9 +2,7 @@ class RegisterRequest {
   String name;
   String email;
   String password;
-  double phoneNumber;
-
-  final String role = "User";
+  String phoneNumber;
 
   RegisterRequest(
       {required this.name,
@@ -14,11 +12,10 @@ class RegisterRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
       'email': email,
+      'name': name,
       'password': password,
-      'role': role,
-      'phoneNumber': phoneNumber
+      'phoneNumber': phoneNumber,
     };
   }
 }

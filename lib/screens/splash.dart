@@ -1,94 +1,122 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'package:simple_animations/simple_animations.dart';
+import 'package:suvidha/models/auth_token.dart';
+import 'package:suvidha/providers/auth_provider.dart';
 
 import '../providers/theme_provider.dart';
+import '../services/custom_hive.dart';
 
-class Splash extends StatefulWidget {
+class SplashProvider extends ChangeNotifier {
+  final BuildContext context;
+  bool loading = false;
+  late AuthProvider authProvider;
+
+  SplashProvider(this.context)
+      : authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+  Future<void> handleRouting() async {
+    loading = true;
+    notifyListeners();
+
+    // Get auth token from Hive
+    AuthToken? authToken = context.read<CustomHive>().getAuthToken();
+
+    if (authToken == null) {
+      // If token is null, navigate to login
+      if (context.mounted) {
+        loading = false;
+        notifyListeners();
+        context.go('/login');
+      }
+    } else {
+      try {
+        await authProvider.fetchUserDetails();
+        if (context.mounted) {
+          loading = false;
+          notifyListeners();
+          context.go('/home');
+        }
+      } catch (e) {
+        if (context.mounted) {
+          loading = false;
+          notifyListeners();
+          context.go('/login');
+        }
+      }
+    }
+  }
+}
+
+class Splash extends StatelessWidget {
   const Splash({super.key});
 
   @override
-  State<Splash> createState() => _SplashState();
-}
-
-class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
-  bool loading = false;
-
-  void _handleRouting() async {
-    await Future.delayed(Duration(seconds: 7));
-    context.go('/login');
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: primaryDark,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PlayAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: 1),
-              duration: const Duration(seconds: 1),
-              builder: (context, value, _) => Transform.scale(
-                scale: Curves.easeIn.transform(value),
-                child: Hero(
-                    tag: 'logo',
-                    child: Column(
-                      children: [
-                        Image.asset(
-                          'assets/icon/app_icon.png',
-                          height: 200,
-                        ),
-                    
-                        Text('सुविधा',
+    return ChangeNotifierProvider(
+      create: (_) => SplashProvider(context)..handleRouting(),
+      child: Consumer<SplashProvider>(
+        builder: (context, splashProvider, child) => Scaffold(
+          backgroundColor: primaryDark,
+          body: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                PlayAnimationBuilder(
+                  tween: Tween<double>(begin: 0, end: 1),
+                  duration: const Duration(seconds: 1),
+                  builder: (context, value, _) => Transform.scale(
+                    scale: Curves.easeIn.transform(value),
+                    child: Hero(
+                      tag: 'logo',
+                      child: Column(
+                        children: [
+                          Image.asset(
+                            'assets/icon/app_icon.png',
+                            height: 200,
+                          ),
+                          Text(
+                            'सुविधा',
                             style: Theme.of(context)
                                 .textTheme
-                              .displayMedium
-                              ?.copyWith(color: suvidhaWhite),
-                        ),
-                        SizedBox(
-                          height: 5,
-                        ),    
-                        Text(
-                          'घरमै सेवा, तपाइको सेवा हाम्रो प्राथमिकता',
-                          style:
-                              Theme.of(context)
-                              .textTheme
-                              .bodyLarge
-                              ?.copyWith(
-                                    color: Colors.amber[600],
-                                  fontStyle: FontStyle.italic
-                                  ),
-                        )
-                      ],
-                    )),
-              ),
-              onCompleted: () async {
-                setState(() {
-                  loading = true;
-                });
-                await Future.delayed(const Duration(seconds: 1));
-                _handleRouting();
-              },
-            ),
-            SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 90),
-              child: Opacity(
-                opacity: loading ? 1 : 0,
-                child: LoopAnimationBuilder(
-                  tween: ColorTween(begin: primary, end: secondary),
-                  duration: const Duration(seconds: 2),
-                  builder: (context, value, child) => LinearProgressIndicator(
-                    color: value,
-                    backgroundColor: Colors.transparent,
+                                .displayMedium
+                                ?.copyWith(color: suvidhaWhite),
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            'घरमै सेवा, तपाइको सेवा हाम्रो प्राथमिकता',
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Colors.amber[600],
+                                      fontStyle: FontStyle.italic,
+                                    ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 10),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 90),
+                  child: Opacity(
+                    opacity: splashProvider.loading ? 1 : 0,
+                    child: LoopAnimationBuilder(
+                      tween: ColorTween(begin: primary, end: secondary),
+                      duration: const Duration(seconds: 2),
+                      builder: (context, value, child) =>
+                          LinearProgressIndicator(
+                        color: value,
+                        backgroundColor: Colors.transparent,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

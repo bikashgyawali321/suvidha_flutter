@@ -18,7 +18,7 @@ class CustomHive {
 
   //save auth tokens
   Future<void> saveAuthToken(AuthToken token) async {
-    return _box.put('auth_token', jsonEncode(token.toJson()));
+    return _box.put('auth_token', jsonEncode(token));
   }
 
   //get auth tokens
