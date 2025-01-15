@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:suvidha/services/auth_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
@@ -8,11 +9,24 @@ import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 class LogoutProvider extends ChangeNotifier {
   final BuildContext context;
 
-  LogoutProvider(this.context);
-
+  LogoutProvider(this.context){
+    _getFCMToken();
+    authService = Provider.of<AuthService>(context);
+  };
+late AuthService authService;
   CustomHive _customHive = CustomHive();
+
+  String? fcmToken;
+
+  _getFCMToken() {
+    fcmToken = _customHive.getFCMToken();
+  }
   Future<void> logout() async {
+    if(fcmToken != null) {
+      await authService.removeFcmToken(fcmToken: fcmToken!);
+    }
     await _customHive.deleteToken();
+
     context.go('/');
     notifyListeners();
   }

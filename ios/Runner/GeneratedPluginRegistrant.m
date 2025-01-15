@@ -24,12 +24,19 @@
 @import path_provider_foundation;
 #endif
 
+#if __has_include(<rive_common/RivePlugin.h>)
+#import <rive_common/RivePlugin.h>
+#else
+@import rive_common;
+#endif
+
 @implementation GeneratedPluginRegistrant
 
 + (void)registerWithRegistry:(NSObject<FlutterPluginRegistry>*)registry {
   [FLTFirebaseCorePlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseCorePlugin"]];
   [FLTFirebaseMessagingPlugin registerWithRegistrar:[registry registrarForPlugin:@"FLTFirebaseMessagingPlugin"]];
   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
+  [RivePlugin registerWithRegistrar:[registry registrarForPlugin:@"RivePlugin"]];
 }
 
 @end

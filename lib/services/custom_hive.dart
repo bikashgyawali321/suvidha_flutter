@@ -47,4 +47,16 @@ class CustomHive {
 
     return ThemeMode.values[themeIndex];
   }
+
+  //save fcm token
+
+    Future<void> saveFCMToken(String token) {
+    return _box.put('fcmToken', token);
+  }
+
+  //get fcm token
+  String? getFCMToken() {
+    String? encodedToken = _box.get('fcmToken');
+    return encodedToken;
+  }
 }
