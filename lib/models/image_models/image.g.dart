@@ -7,6 +7,7 @@ part of 'image.dart';
 // **************************************************************************
 
 Image _$ImageFromJson(Map<String, dynamic> json) => Image(
+      id: json['_id'] as String?,
       url: json['url'] as String?,
       publicId: json['publicId'] as String?,
       isActive: json['isActive'] as bool?,
@@ -19,6 +20,7 @@ Image _$ImageFromJson(Map<String, dynamic> json) => Image(
     );
 
 Map<String, dynamic> _$ImageToJson(Image instance) => <String, dynamic>{
+      '_id': instance.id,
       'url': instance.url,
       if (instance.publicId case final value?) 'publicId': value,
       'isActive': instance.isActive,

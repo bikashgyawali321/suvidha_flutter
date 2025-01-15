@@ -4,6 +4,9 @@ part 'image.g.dart';
 
 @JsonSerializable()
 class Image {
+
+  @JsonKey(name:'_id')
+  String? id;
   @JsonKey(name: 'url')
   String? url;
 
@@ -20,6 +23,7 @@ class Image {
   DateTime? updatedAt;
 
   Image({
+    this.id,
     this.url,
     this.publicId,
     this.isActive,
@@ -27,9 +31,8 @@ class Image {
     this.updatedAt,
   });
 
-  /// Factory constructor for creating a new instance from a JSON map
   factory Image.fromJson(Map<String, dynamic> json) => _$ImageFromJson(json);
 
-  /// Method to convert this object into a JSON map
+
   Map<String, dynamic> toJson() => _$ImageToJson(this);
 }
