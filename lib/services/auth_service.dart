@@ -241,4 +241,25 @@ class AuthService extends ChangeNotifier {
       throw Exception('Unable to get user details');
     }
   }
+  //add fcm token
+
+  Future<BackendResponse<Map<String,dynamic>>> addFcmToken({required String fcmToken}) async {
+    try {
+      Response response = await _dio.post(
+        '/auth/addFcm',
+        data: {
+          'fcmToken': fcmToken,
+        },
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while adding fcm token :${e.toString()}");
+      throw Exception('Unable to add fcm token');
+    }
+  }
 }
