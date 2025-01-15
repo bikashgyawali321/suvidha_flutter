@@ -289,19 +289,19 @@ class BackendService extends ChangeNotifier {
 
 
   //post image
-  Future<BackendResponse<Map<String,dynamic>>> postImage({required File image}) async {
+  Future<BackendResponse<Map<String,dynamic>>> postImage({required File image,required String imageType}) async {
     try {
       final FormData formData = FormData.fromMap({
-        'image': await MultipartFile.fromFile(
+        'data': await MultipartFile.fromFile(
           image.path,
           filename: image.path.split('/').last,
-        )
+        ),
+        "type":imageType
+
       });
       Response response = await _dio.post(
         '/image/details',
-        data: {
-          'image': formData,
-        },
+        data:formData,
       );
       return BackendResponse<Map<String,dynamic>>(
         title: response.data['title'] ?? '',
@@ -314,4 +314,66 @@ class BackendService extends ChangeNotifier {
       throw Exception('Unable to post image');
     }
   }
+   
+//get images
+
+  Future<BackendResponse<List<Map<String,dynamic>>>> getImages() async {
+    try {
+      Response response = await _dio.get(
+        '/image/details',
+      );
+      return BackendResponse<List<Map<String,dynamic>>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? [] : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while getting images :${e.toString()}");
+      throw Exception('Unable to get images');
+    }
+  }
+  //get image
+
+  Future<BackendResponse<Map<String,dynamic>>> getImage({required String imageUrl}) async {
+    try {
+      Response response = await _dio.get(
+        '/image/details',
+        queryParameters: {
+          'url':imageUrl
+        }
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while getting image :${e.toString()}");
+      throw Exception('Unable to get image');
+    }
+  }
+
+  //delete image
+  Future<BackendResponse<Map<String,dynamic>>> deleteImage({required String imageUrl}) async {
+    try {
+      Response response = await _dio.delete(
+        '/image/details',
+          queryParameters: {
+          'url':imageUrl
+        }
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while deleting image :${e.toString()}");
+      throw Exception('Unable to delete image');
+    }
+  }
+  
 }
