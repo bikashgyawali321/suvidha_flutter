@@ -13,6 +13,7 @@ import 'services/auth_service.dart';
 import 'services/custom_hive.dart';
 
 void main() async {
+      
   await CustomHive().init();
   runApp(ProviderWrappedApp());
 }

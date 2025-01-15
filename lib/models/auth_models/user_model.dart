@@ -17,6 +17,7 @@ class UserModel {
   DateTime? otpExpires;
   DateTime? createdAt;
   DateTime? updatedAt;
+  List<String>? fcmTokens;
 
   UserModel({
     this.id,
@@ -31,6 +32,7 @@ class UserModel {
     this.otpExpires,
     this.createdAt,
     this.updatedAt,
+    this.fcmTokens
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

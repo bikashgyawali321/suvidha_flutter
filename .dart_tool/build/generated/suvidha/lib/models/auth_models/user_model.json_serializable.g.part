@@ -21,6 +21,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       updatedAt: json['updatedAt'] == null
           ? null
           : DateTime.parse(json['updatedAt'] as String),
+      fcmTokens: (json['fcmTokens'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -36,4 +39,5 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'otpExpires': instance.otpExpires?.toIso8601String(),
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
+      'fcmTokens': instance.fcmTokens,
     };
