@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:suvidha/models/auth_models/login_request.dart';
@@ -6,7 +8,7 @@ import 'package:suvidha/models/backend_response.dart';
 import 'package:suvidha/services/interceptors/token_interceptor.dart';
 import 'interceptors/log_interceptor.dart';
 
-class AuthService extends ChangeNotifier {
+class BackendService extends ChangeNotifier {
   final Dio _dio = Dio(
     BaseOptions(
       baseUrl: "http://127.0.0.1:4000/api",
@@ -260,6 +262,56 @@ class AuthService extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error while adding fcm token :${e.toString()}");
       throw Exception('Unable to add fcm token');
+    }
+  }
+
+  //remove fcm token
+  Future<BackendResponse<Map<String,dynamic>>> removeFcmToken({required String fcmToken}) async {
+    try {
+      Response response = await _dio.post(
+        '/auth/removeFcm',
+        data: {
+          'fcmToken': fcmToken,
+        },
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while removing fcm token :${e.toString()}");
+      throw Exception('Unable to remove fcm token');
+    }
+  }
+
+
+
+  //post image
+  Future<BackendResponse<Map<String,dynamic>>> postImage({required File image}) async {
+    try {
+      final FormData formData = FormData.fromMap({
+        'image': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        )
+      });
+      Response response = await _dio.post(
+        '/image/details',
+        data: {
+          'image': formData,
+        },
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while posting image :${e.toString()}");
+      throw Exception('Unable to post image');
     }
   }
 }

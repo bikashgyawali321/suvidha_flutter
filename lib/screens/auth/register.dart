@@ -3,17 +3,17 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/models/auth_models/register_request.dart';
 import 'package:suvidha/providers/theme_provider.dart';
-import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 
 class RegisterProvider extends ChangeNotifier {
   final BuildContext context;
   RegisterProvider({required this.context})
-      : backendService = Provider.of<AuthService>(context);
+      : backendService = Provider.of<BackendService>(context);
   bool loading = false;
   num otp = 0;
 
-  late AuthService backendService;
+  late BackendService backendService;
   RegisterRequest request = RegisterRequest(
     email: '',
     name: '',

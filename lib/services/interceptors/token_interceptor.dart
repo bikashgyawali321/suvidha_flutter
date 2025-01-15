@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:suvidha/models/auth_models/auth_token.dart';
-import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 
 class TokenInterceptor extends Interceptor {
@@ -38,7 +38,7 @@ class TokenInterceptor extends Interceptor {
       try {
         // Refresh token using the stored refresh token
         final response =
-            await AuthService().refreshToken(refreshToken: token.refreshToken!);
+            await BackendService().refreshToken(refreshToken: token.refreshToken!);
 
         if (response.data != null) {
           AuthToken newToken = AuthToken.fromJson(response.data!);

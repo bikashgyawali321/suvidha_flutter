@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/backend_service.dart';
 
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/form_bottom_sheet_header.dart';
 
 class ChangePasswordProvider extends ChangeNotifier {
   ChangePasswordProvider(this.context) {
-    _authService = Provider.of<AuthService>(context, listen: false);
+    _authService = Provider.of<BackendService>(context, listen: false);
   }
   final BuildContext context;
 
   String oldPassword = '';
   String newPassword = '';
   String confirmPassword = '';
-  late AuthService _authService;
+  late BackendService _authService;
   bool loading = false;
   bool obsecureOldPassword = true;
   bool obsecureNewPassword = true;

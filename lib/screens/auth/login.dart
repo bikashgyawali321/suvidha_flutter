@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/models/auth_models/login_request.dart';
 import 'package:suvidha/screens/auth/bottomsheets/forgot_password_sheet.dart';
-import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
 
@@ -13,12 +13,12 @@ import '../../providers/theme_provider.dart';
 class LoginProvider extends ChangeNotifier {
   final BuildContext context;
   bool loading = false;
-  late AuthService _backendService;
+  late BackendService _backendService;
   bool _obsecureText = true;
   LoginRequest request = LoginRequest(email: '', password: '');
   final _formKey = GlobalKey<FormState>();
   LoginProvider(this.context)
-      : _backendService = Provider.of<AuthService>(context);
+      : _backendService = Provider.of<BackendService>(context);
 
   //void toggle visiblitity of password
   void toggleVisibility() {

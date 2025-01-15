@@ -9,7 +9,7 @@ import 'providers/theme_provider.dart';
 import 'screens/home/profile.dart';
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
-import 'services/auth_service.dart';
+import 'services/backend_service.dart';
 import 'services/custom_hive.dart';
 
 void main() async {
@@ -26,7 +26,7 @@ class ProviderWrappedApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => AuthService()),
+        ChangeNotifierProvider(create: (_) => BackendService()),
         ChangeNotifierProvider(create: (_) => AuthProvider(_)),
       ],
       child: MyApp(),
