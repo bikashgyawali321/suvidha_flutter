@@ -268,11 +268,11 @@ class BackendService extends ChangeNotifier {
   //remove fcm token
   Future<BackendResponse<Map<String,dynamic>>> removeFcmToken({required String fcmToken}) async {
     try {
-      Response response = await _dio.post(
+      Response response = await _dio.delete(
         '/auth/removeFcm',
-        data: {
-          'fcmToken': fcmToken,
-        },
+        queryParameters: {
+          'fcmToken':fcmToken
+        }
       );
       return BackendResponse<Map<String,dynamic>>(
         title: response.data['title'] ?? '',
