@@ -1,7 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
-import 'auth_service.dart';
+import 'backend_service.dart';
 import 'custom_hive.dart';
 
 
@@ -9,7 +9,7 @@ FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
 class NotificationService extends ChangeNotifier {
   NotificationSettings? _settings;
-  AuthService authService;
+  BackendService authService;
 
   NotificationService(this.authService);
   final CustomHive _customHive = CustomHive();
@@ -35,7 +35,7 @@ class NotificationService extends ChangeNotifier {
     if (_settings?.authorizationStatus == AuthorizationStatus.authorized) {
       sendFCMToken();
     }
-    
+
 
     notifyListeners();
   }

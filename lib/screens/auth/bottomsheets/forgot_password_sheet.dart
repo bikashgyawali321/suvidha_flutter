@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:suvidha/services/auth_service.dart';
+import 'package:suvidha/services/backend_service.dart';
 
 import '../../../widgets/custom_button.dart';
 
 class ForgotPasswordProvider extends ChangeNotifier {
-  late AuthService authService;
+  late BackendService authService;
   ForgotPasswordProvider(this.context, this.vsync) {
-    authService = Provider.of<AuthService>(context);
+    authService = Provider.of<BackendService>(context);
     tabController = TabController(length: 3, vsync: vsync);
   }
   String email = '';
