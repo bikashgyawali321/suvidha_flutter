@@ -5,7 +5,7 @@ import 'package:simple_animations/simple_animations.dart';
 import 'package:suvidha/providers/auth_provider.dart';
 import 'package:suvidha/providers/theme_provider.dart';
 
-import '../providers/theme_provider.dart';
+import '../services/notification.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -25,7 +25,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    _authProvider = Provider.of<AuthProvider>(context);
+    authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: primaryDark,
       body: Center(
