@@ -6,6 +6,8 @@
 .pub-cache/
 .pub/
 build/
+ios/Pods/
+
 
 # Obsolete files
 *.lock
