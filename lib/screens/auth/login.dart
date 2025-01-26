@@ -6,10 +6,7 @@ import 'package:suvidha/screens/auth/bottomsheets/forgot_password_sheet.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
-<<<<<<< HEAD
 import 'package:suvidha/widgets/custom_snackbar.dart';
-=======
->>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
 
 import '../../models/auth_models/auth_token.dart';
 import '../../providers/theme_provider.dart';
