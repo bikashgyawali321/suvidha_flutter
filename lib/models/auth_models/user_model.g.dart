@@ -28,7 +28,10 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       fcmTokens: (json['fcmTokens'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+<<<<<<< HEAD
       profilePicture: json['profilePic'] as String?,
+=======
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -45,5 +48,8 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'fcmTokens': instance.fcmTokens,
+<<<<<<< HEAD
       'profilePic': instance.profilePicture,
+=======
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
     };

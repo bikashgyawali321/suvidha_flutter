@@ -63,4 +63,6 @@ class AuthProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  //function to refresh the auth token
 }

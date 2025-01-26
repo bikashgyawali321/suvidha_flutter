@@ -135,8 +135,13 @@ class BackendService extends ChangeNotifier {
     required String password,
     required String confirmPassword,
   }) async {
+<<<<<<< HEAD
     return await handleRequest(
       request: _dio.post(
+=======
+    try {
+      Response resp = await _dio.post(
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
         '/auth/resetPassword',
         data: {
           'email': email,
@@ -144,6 +149,7 @@ class BackendService extends ChangeNotifier {
           'password': password,
           'confirmPassword': confirmPassword,
         },
+<<<<<<< HEAD
       ),
       titleOfRequest: 'resetting password',
     );
@@ -155,10 +161,32 @@ class BackendService extends ChangeNotifier {
   }) async {
     return await handleRequest(
       request: _dio.post(
+=======
+      );
+      return BackendResponse<Map<String, dynamic>>(
+        title: resp.data['title'] ?? '',
+        message: resp.data['message'] ?? '',
+        data: resp.data['title'] == 'error' ? null : resp.data['data'],
+        statusCode: resp.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while resetting password :${e.toString()}");
+      throw Exception('Unable to reset password');
+    }
+  }
+
+  // Refresh token
+  Future<BackendResponse<Map<String, dynamic>>> refreshToken({
+    required String refreshToken,
+  }) async {
+    try {
+      Response response = await _dio.post(
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
         '/auth/refreshToken',
         data: {
           'refreshToken': refreshToken,
         },
+<<<<<<< HEAD
       ),
       titleOfRequest: 'refreshing token',
     );
@@ -166,18 +194,41 @@ class BackendService extends ChangeNotifier {
 
   // Change password
   Future<BackendResponse> changePassword({
+=======
+      );
+      return BackendResponse<Map<String, dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while refreshing token :${e.toString()}");
+      throw Exception('Unable to refresh token');
+    }
+  }
+
+  // Change password
+  Future<BackendResponse<Map<String, dynamic>>> changePassword({
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
     required String oldPassword,
     required String newPassword,
     required String confirmPassword,
   }) async {
+<<<<<<< HEAD
     return await handleRequest(
       request: _dio.post(
+=======
+    try {
+      Response resp = await _dio.post(
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
         '/auth/changePassword',
         data: {
           'oldPassword': oldPassword,
           'newPassword': newPassword,
           'confirmPassword': confirmPassword,
         },
+<<<<<<< HEAD
       ),
       titleOfRequest: 'changing password',
     );
@@ -289,4 +340,167 @@ class BackendService extends ChangeNotifier {
         ),
         titleOfRequest: "fetching all bookings by userId");
   }
+=======
+      );
+      return BackendResponse<Map<String, dynamic>>(
+        title: resp.data['title'] ?? '',
+        message: resp.data['message'] ?? '',
+        data: resp.data['title'] == 'error' ? null : resp.data['data'],
+        statusCode: resp.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while changing password :${e.toString()}");
+      throw Exception('Unable to change password');
+    }
+  }
+
+  // Get user details
+  Future<BackendResponse<Map<String, dynamic>>> getUserDetails() async {
+    try {
+      Response response = await _dio.get('/auth/me');
+      return BackendResponse<Map<String, dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while getting user details :${e.toString()}");
+      throw Exception('Unable to get user details');
+    }
+  }
+  //add fcm token
+
+  Future<BackendResponse<Map<String,dynamic>>> addFcmToken({required String fcmToken}) async {
+    try {
+      Response response = await _dio.post(
+        '/auth/addFcm',
+        data: {
+          'fcmToken': fcmToken,
+        },
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while adding fcm token :${e.toString()}");
+      throw Exception('Unable to add fcm token');
+    }
+  }
+
+  //remove fcm token
+  Future<BackendResponse<Map<String,dynamic>>> removeFcmToken({required String fcmToken}) async {
+    try {
+      Response response = await _dio.delete(
+        '/auth/removeFcm',
+        queryParameters: {
+          'fcmToken':fcmToken
+        }
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while removing fcm token :${e.toString()}");
+      throw Exception('Unable to remove fcm token');
+    }
+  }
+
+
+
+  //post image
+  Future<BackendResponse<Map<String,dynamic>>> postImage({required File image,required String imageType}) async {
+    try {
+      final FormData formData = FormData.fromMap({
+        'data': await MultipartFile.fromFile(
+          image.path,
+          filename: image.path.split('/').last,
+        ),
+        "type":imageType
+
+      });
+      Response response = await _dio.post(
+        '/image/details',
+        data:formData,
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while posting image :${e.toString()}");
+      throw Exception('Unable to post image');
+    }
+  }
+   
+//get images
+
+  Future<BackendResponse<List<Map<String,dynamic>>>> getImages() async {
+    try {
+      Response response = await _dio.get(
+        '/image/details',
+      );
+      return BackendResponse<List<Map<String,dynamic>>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? [] : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while getting images :${e.toString()}");
+      throw Exception('Unable to get images');
+    }
+  }
+  //get image
+
+  Future<BackendResponse<Map<String,dynamic>>> getImage({required String imageUrl}) async {
+    try {
+      Response response = await _dio.get(
+        '/image/details',
+        queryParameters: {
+          'url':imageUrl
+        }
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while getting image :${e.toString()}");
+      throw Exception('Unable to get image');
+    }
+  }
+
+  //delete image
+  Future<BackendResponse<Map<String,dynamic>>> deleteImage({required String imageUrl}) async {
+    try {
+      Response response = await _dio.delete(
+        '/image/details',
+          queryParameters: {
+          'url':imageUrl
+        }
+      );
+      return BackendResponse<Map<String,dynamic>>(
+        title: response.data['title'] ?? '',
+        message: response.data['message'] ?? '',
+        data: response.data['title'] == 'error' ? null : response.data['data'],
+        statusCode: response.statusCode,
+      );
+    } catch (e) {
+      debugPrint("Error while deleting image :${e.toString()}");
+      throw Exception('Unable to delete image');
+    }
+  }
+  
+>>>>>>> c45fc1f021233fdae9e9cd12af20ca07c8f9be1e
 }
