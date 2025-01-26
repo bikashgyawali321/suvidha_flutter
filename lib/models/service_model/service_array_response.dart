@@ -11,6 +11,7 @@ class ServiceArrayResponse {
     name: 'docs',
     fromJson: _docsFromJson,
     toJson: _docsToJson,
+    defaultValue: null,
   )
   final List<DocsService> docs;
 
