@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/services/backend_service.dart';
+import 'package:suvidha/widgets/custom_snackbar.dart';
 
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/form_bottom_sheet_header.dart';
@@ -31,19 +32,15 @@ class ChangePasswordProvider extends ChangeNotifier {
         confirmPassword: confirmPassword);
     if (response.statusCode == 200) {
       context.pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message),
-        ),
-      );
+      SnackBarHelper.showSnackbar(
+          context: context, successMessage: response.message);
 
       loading = false;
       notifyListeners();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message),
-        ),
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage: response.errorMessage,
       );
       loading = false;
       notifyListeners();
@@ -86,107 +83,107 @@ class ChangePassword extends StatelessWidget {
               FormBottomSheetHeader(title: 'Change Password'),
               const SizedBox(height: 10),
               Form(
-                  key: provider._formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 10,
-                    ),
-                    child: Column(
-                      children: [
-                        TextFormField(
-                          onChanged: (value) {
-                            provider.oldPassword = value;
-                          },
-                          decoration: InputDecoration(
-                              labelText: 'Old Password',
-                              suffixIcon: IconButton(
-                                  onPressed:
-                                      provider.toggleOldPasswordVisibility,
-                                  icon: Icon(provider.obsecureOldPassword
-                                      ? Icons.visibility_off
-                                      : Icons.visibility))),
-                          obscureText: provider.obsecureOldPassword,
-                          validator: (value) {
-                            RegExp passwordRegex = RegExp(
-                                r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{7,}$');
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            }
-                            if (!passwordRegex.hasMatch(value)) {
-                              return 'Password must be 7+ characters with a letter, number,\nand symbol.';
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: 15),
-                        TextFormField(
-                          onChanged: (value) {
-                            provider.newPassword = value;
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'New password',
+                key: provider._formKey,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        onChanged: (value) {
+                          provider.oldPassword = value;
+                        },
+                        decoration: InputDecoration(
+                            labelText: 'Old Password',
                             suffixIcon: IconButton(
-                              icon: Icon(
-                                provider.obsecureNewPassword
+                                onPressed: provider.toggleOldPasswordVisibility,
+                                icon: Icon(provider.obsecureOldPassword
                                     ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: provider.toggleNewPasswordVisibility,
+                                    : Icons.visibility))),
+                        obscureText: provider.obsecureOldPassword,
+                        validator: (value) {
+                          RegExp passwordRegex = RegExp(
+                              r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{7,}$');
+                          if (value == null || value.isEmpty) {
+                            return "Password is required";
+                          }
+                          if (!passwordRegex.hasMatch(value)) {
+                            return 'Password must be 7+ characters with a letter, number,\nand symbol.';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        onChanged: (value) {
+                          provider.newPassword = value;
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'New password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              provider.obsecureNewPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
+                            onPressed: provider.toggleNewPasswordVisibility,
                           ),
-                          obscureText: provider.obsecureNewPassword,
-                          validator: (value) {
-                            RegExp passwordRegex = RegExp(
-                                r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{7,}$');
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            }
-                            if (!passwordRegex.hasMatch(value)) {
-                              return 'Password must be 7+ characters with a letter, number,\nand symbol.';
-                            }
-                            return null;
-                          },
                         ),
-                        SizedBox(
-                          height: 15,
-                        ),
-                        TextFormField(
-                          onChanged: (value) {
-                            provider.confirmPassword = value;
-                          },
-                          decoration: InputDecoration(
-                            labelText: ' Confirm new password',
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                provider.obsecureNewPassword
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                              ),
-                              onPressed: provider.toggleNewPasswordVisibility,
+                        obscureText: provider.obsecureNewPassword,
+                        validator: (value) {
+                          RegExp passwordRegex = RegExp(
+                              r'^(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{7,}$');
+                          if (value == null || value.isEmpty) {
+                            return "Password is required";
+                          }
+                          if (!passwordRegex.hasMatch(value)) {
+                            return 'Password must be 7+ characters with a letter, number,\nand symbol.';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      TextFormField(
+                        onChanged: (value) {
+                          provider.confirmPassword = value;
+                        },
+                        decoration: InputDecoration(
+                          labelText: ' Confirm new password',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              provider.obsecureNewPassword
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
                             ),
+                            onPressed: provider.toggleNewPasswordVisibility,
                           ),
-                          obscureText: provider.obsecureNewPassword,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return "Password is required";
-                            }
-                            if (value != provider.newPassword) {
-                              return 'Passwords do not match';
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (_) => provider.changePassword,
                         ),
-                        const SizedBox(height: 20),
-                        CustomButton(
-                          onPressed: provider.changePassword,
-                          label: 'Change Password',
-                          loading: provider.loading,
-                        )
-                      ],
-                    ),
-                  ))
+                        obscureText: provider.obsecureNewPassword,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Password is required";
+                          }
+                          if (value != provider.newPassword) {
+                            return 'Passwords do not match';
+                          }
+                          return null;
+                        },
+                        onFieldSubmitted: (_) => provider.changePassword,
+                      ),
+                      const SizedBox(height: 20),
+                      CustomButton(
+                        onPressed: provider.changePassword,
+                        label: 'Change Password',
+                        loading: provider.loading,
+                      )
+                    ],
+                  ),
+                ),
+              )
             ],
           ),
         )),

@@ -13,11 +13,13 @@ class UserModel {
   String? role;
   bool? isBlocked;
   bool? isEmailVerified;
-  String? otp;
+  int? otp;
   DateTime? otpExpires;
   DateTime? createdAt;
   DateTime? updatedAt;
   List<String>? fcmTokens;
+  @JsonKey(name: 'profilePic')
+  String? profilePicture;
 
   UserModel({
     this.id,
@@ -32,7 +34,8 @@ class UserModel {
     this.otpExpires,
     this.createdAt,
     this.updatedAt,
-    this.fcmTokens
+    this.fcmTokens,
+    this.profilePicture,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>

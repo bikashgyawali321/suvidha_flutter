@@ -6,6 +6,7 @@ import 'package:suvidha/screens/auth/bottomsheets/forgot_password_sheet.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
+import 'package:suvidha/widgets/custom_snackbar.dart';
 
 import '../../models/auth_models/auth_token.dart';
 import '../../providers/theme_provider.dart';
@@ -31,15 +32,18 @@ class LoginProvider extends ChangeNotifier {
     loading = true;
     notifyListeners();
 
-    final response = await _backendService.loginUser(request);
-    if (response.data != null) {
-      AuthToken token = AuthToken.fromJson(response.data!);
+    final response = await _backendService.login(request);
+    if (response.result != null) {
+      AuthToken token = AuthToken.fromJson(response.result!);
       await CustomHive().saveAuthToken(token);
       context.go('/');
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(response.message),
-      ));
+      loading = false;
+      notifyListeners();
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage: response.errorMessage,
+      );
     }
   }
 }

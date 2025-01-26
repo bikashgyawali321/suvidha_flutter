@@ -25,7 +25,7 @@ class TokenInterceptor extends Interceptor {
     DateTime accessTokenExpiresAt =
         DateTime.fromMillisecondsSinceEpoch(decodedAccessToken['exp'] * 1000);
 
-    // Token is still valid
+    //token is valid
     if (accessTokenExpiresAt.isAfter(DateTime.now())) {
       options.headers.addAll({
         "Authorization": "Bearer ${token.accessToken}",
@@ -36,19 +36,18 @@ class TokenInterceptor extends Interceptor {
     // If token is expired and not trying to refresh
     if (!options.path.contains('refreshToken')) {
       try {
-        // Refresh token using the stored refresh token
-        final response =
-            await BackendService().refreshToken(refreshToken: token.refreshToken!);
+        // refresh token
+        final response = await BackendService()
+            .refreshToken(refreshToken: token.refreshToken!);
 
-        if (response.data != null) {
-          AuthToken newToken = AuthToken.fromJson(response.data!);
+        if (response.result != null) {
+          AuthToken newToken = AuthToken.fromJson(response.result!);
           // Save new token to Hive
           await CustomHive().saveAuthToken(newToken);
           options.headers.addAll({
             "Authorization": "Bearer ${newToken.accessToken}",
           });
         } else {
-          // If refresh failed, delete the token
           await CustomHive().deleteToken();
         }
       } catch (e) {

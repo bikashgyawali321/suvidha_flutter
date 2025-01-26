@@ -16,6 +16,10 @@ analyzer:
     file_names: ignore
     prefer_final_fields: ignore
     deprecated_member_use: ignore
+    no_leading_underscores_for_local_identifiers: ignore
+    unused_field: ignore
+    prefer_const_literals_to_create_immutables: ignore
+    unnecessary_this: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

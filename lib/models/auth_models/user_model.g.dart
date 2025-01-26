@@ -15,7 +15,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       role: json['role'] as String?,
       isBlocked: json['isBlocked'] as bool?,
       isEmailVerified: json['isEmailVerified'] as bool?,
-      otp: json['otp'] as String?,
+      otp: (json['otp'] as num?)?.toInt(),
       otpExpires: json['otpExpires'] == null
           ? null
           : DateTime.parse(json['otpExpires'] as String),
@@ -28,6 +28,9 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       fcmTokens: (json['fcmTokens'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+
+      profilePicture: json['profilePic'] as String?,
+
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -44,4 +47,5 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'createdAt': instance.createdAt?.toIso8601String(),
       'updatedAt': instance.updatedAt?.toIso8601String(),
       'fcmTokens': instance.fcmTokens,
+      'profilePic': instance.profilePicture,
     };

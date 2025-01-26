@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/models/auth_models/user_model.dart';
 import 'package:suvidha/services/backend_service.dart';
-
-import '../models/backend_response.dart';
+import 'package:suvidha/widgets/custom_snackbar.dart';
 
 class AuthProvider extends ChangeNotifier {
   UserModel? user;
@@ -14,21 +14,46 @@ class AuthProvider extends ChangeNotifier {
 
   AuthProvider(this.context)
       : service = Provider.of<BackendService>(context, listen: false);
-  String? error;
+
+  //greeting message to the user based on the time of the day
+  String get greetingMessage {
+    var hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning,${user?.name ?? 'User'} 😊';
+    }
+    if (hour < 17) {
+      return 'Good Afternoon,${user?.name ?? 'User'} 😊';
+    }
+    return 'Good Evening, ${user?.name ?? 'User'} 😊';
+  }
 
   // Fetch user details from the backend
-  Future<void> fetchUserDetails() async {
+  Future<void> fetchUserDetails(BuildContext context) async {
     loading = true;
     notifyListeners();
 
     try {
-      BackendResponse response = await service.getUserDetails();
+      final response = await service.getUserDetails();
 
-      if (response.data != null) {
-        user = UserModel.fromJson(response.data);
+      if (response.result != null && response.statusCode == 200) {
+        user = UserModel.fromJson(response.result!);
+        if (user!.role != "User") {
+          context.go('/login');
+          SnackBarHelper.showSnackbar(
+            context: context,
+            warningMessage:
+                'You are not authorized to access this app, please login with a valid user account',
+          );
+          return;
+        }
+        context.go('/home');
+
         debugPrint("User details: ${user!.name}");
       } else {
-        error = response.message;
+        SnackBarHelper.showSnackbar(
+          context: context,
+          errorMessage: response.errorMessage,
+        );
         notifyListeners();
       }
     } catch (e) {

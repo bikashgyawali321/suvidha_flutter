@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/services/backend_service.dart';
+import 'package:suvidha/widgets/custom_snackbar.dart';
 
 import '../../../widgets/custom_button.dart';
 
@@ -72,10 +73,9 @@ class ForgotPasswordProvider extends ChangeNotifier {
       notifyListeners();
     } else {
       loading = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message),
-        ),
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage: response.message,
       );
 
       notifyListeners();
@@ -97,21 +97,18 @@ class ForgotPasswordProvider extends ChangeNotifier {
     if (response.statusCode == 200) {
       await Future.delayed(Duration(seconds: 3));
       loading = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message),
-        ),
+      SnackBarHelper.showSnackbar(
+        context: context,
+        successMessage: response.message,
       );
       notifyListeners();
       //navigate to login screen
       Navigator.pop(context);
     } else {
       loading = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(response.message),
-          backgroundColor: Colors.red,
-        ),
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage: response.errorMessage,
       );
       notifyListeners();
     }

@@ -1,0 +1,45 @@
+# Dart and Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.package
+.pub-cache/
+.pub/
+build/
+ios/Pods/
+
+
+# Obsolete files
+*.lock
+*.log
+*.tmp
+
+# Generated files
+*.apk
+*.aab
+*.app/
+*.ipa
+*.so
+*.dylib
+*.dll
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# macOS-specific
+.DS_Store
+
+# Windows-specific
+Thumbs.db
+*.exe
+*.dll
+
+# Logs and system files
+*.log
+*.tmp
+
+# Exclude environment files
+.env
+.env.*

@@ -11,3 +11,10 @@ GeneratedPluginRegistrant.java
 key.properties
 **/*.keystore
 **/*.jks
+# Flutter build files
+build/
+*.apk
+*.aab
+
+# Flutter libraries
+*.so

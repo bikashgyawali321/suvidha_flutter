@@ -5,6 +5,7 @@ import 'package:suvidha/models/auth_models/register_request.dart';
 import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/widgets/custom_button.dart';
+import 'package:suvidha/widgets/custom_snackbar.dart';
 
 class RegisterProvider extends ChangeNotifier {
   final BuildContext context;
@@ -54,28 +55,23 @@ class RegisterProvider extends ChangeNotifier {
           );
         }
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.green,
-          ),
+        SnackBarHelper.showSnackbar(
+          context: context,
+          successMessage: response.message,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.red,
-          ),
+        loading = false;
+        SnackBarHelper.showSnackbar(
+          context: context,
+          errorMessage: response.errorMessage,
         );
       }
     } catch (e) {
       debugPrint("Error in registering User: ${e.toString()}");
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Something went wrong. Please try again later.'),
-          backgroundColor: Colors.red,
-        ),
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage: 'An error occurred while registering user',
       );
     }
 
@@ -92,26 +88,29 @@ class RegisterProvider extends ChangeNotifier {
           await backendService.verifyEmail(email: request.email, otp: otp);
       if (response.statusCode == 200) {
         loading = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.green,
-          ),
+        SnackBarHelper.showSnackbar(
+          context: context,
+          successMessage: response.message,
         );
         context.go('/login');
         notifyListeners();
       } else {
         loading = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.red,
-          ),
+        SnackBarHelper.showSnackbar(
+          context: context,
+          errorMessage: response.errorMessage,
         );
         notifyListeners();
       }
     } catch (e) {
       debugPrint("Error while verifying email :${e.toString()}");
+      loading = false;
+      notifyListeners();
+      SnackBarHelper.showSnackbar(
+        context: context,
+        errorMessage:
+            'An error occurred while verifying email please try again later',
+      );
     }
   }
 
@@ -122,18 +121,14 @@ class RegisterProvider extends ChangeNotifier {
       final response =
           await backendService.resendVerificationEmail(email: request.email);
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.green,
-          ),
+        SnackBarHelper.showSnackbar(
+          context: context,
+          successMessage: response.message,
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.message),
-            backgroundColor: Colors.red,
-          ),
+        SnackBarHelper.showSnackbar(
+          context: context,
+          errorMessage: response.errorMessage,
         );
       }
     } catch (e) {
