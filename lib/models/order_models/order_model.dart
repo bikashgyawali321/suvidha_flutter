@@ -13,12 +13,16 @@ class NewOrderModel {
   final double longitude;
   @JsonKey(name: 'lat')
   final double lattitude;
+  @JsonKey(name: 'location')
+  String location;
 
-  NewOrderModel(
-      {required this.serviceId,
-      required this.price,
-      required this.longitude,
-      required this.lattitude});
+  NewOrderModel({
+    required this.serviceId,
+    required this.price,
+    required this.longitude,
+    required this.lattitude,
+    required this.location,
+  });
 
   factory NewOrderModel.fromJson(Map<String, dynamic> json) =>
       _$NewOrderModelFromJson(json);
@@ -37,7 +41,8 @@ class OrderModel {
 
   @JsonKey(name: 'org')
   final String orgId;
-
+  @JsonKey(name: 'location')
+  final String location;
   @JsonKey(name: 'price')
   final num price;
 
@@ -62,6 +67,7 @@ class OrderModel {
     required this.userId,
     required this.isActive,
     required this.price,
+    required this.location,
     required this.status,
     required this.rating,
     required this.review,

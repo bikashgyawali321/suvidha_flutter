@@ -12,6 +12,7 @@ NewOrderModel _$NewOrderModelFromJson(Map<String, dynamic> json) =>
       price: json['price'] as num,
       longitude: (json['long'] as num).toDouble(),
       lattitude: (json['lat'] as num).toDouble(),
+      location: json['location'] as String,
     );
 
 Map<String, dynamic> _$NewOrderModelToJson(NewOrderModel instance) =>
@@ -20,6 +21,7 @@ Map<String, dynamic> _$NewOrderModelToJson(NewOrderModel instance) =>
       'price': instance.price,
       'long': instance.longitude,
       'lat': instance.lattitude,
+      'location': instance.location,
     };
 
 OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
@@ -27,6 +29,7 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
       userId: json['user'] as String,
       isActive: json['isActive'] as bool,
       price: json['price'] as num,
+      location: json['location'] as String,
       status: json['status'] as String,
       rating: (json['rating'] as num).toDouble(),
       review: json['review'] as String,
@@ -43,6 +46,7 @@ Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
       'user': instance.userId,
       'service': instance.serviceNameId,
       'org': instance.orgId,
+      'location': instance.location,
       'price': instance.price,
       'status': instance.status,
       'rating': instance.rating,

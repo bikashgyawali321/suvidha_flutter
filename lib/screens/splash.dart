@@ -5,6 +5,8 @@ import 'package:simple_animations/simple_animations.dart';
 import 'package:suvidha/providers/auth_provider.dart';
 import 'package:suvidha/providers/theme_provider.dart';
 
+import '../models/auth_models/auth_token.dart';
+import '../services/custom_hive.dart';
 import '../services/notification.dart';
 
 class Splash extends StatefulWidget {
@@ -15,17 +17,21 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
+  late AuthProvider _authProvider;
   bool loading = false;
-  late AuthProvider authProvider;
 
   void _handleRouting() async {
-    await Future.delayed(Duration(seconds: 7));
-    context.go('/login');
+    AuthToken? token = CustomHive().getAuthToken();
+    if (token == null) {
+      if (mounted) context.go("/login");
+    } else {
+      await _authProvider.fetchUserDetails(context);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    authProvider = Provider.of<AuthProvider>(context);
+    _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: primaryDark,
       body: Center(

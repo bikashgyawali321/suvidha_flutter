@@ -9,11 +9,11 @@ import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 class LogoutProvider extends ChangeNotifier {
   final BuildContext context;
 
-  LogoutProvider(this.context){
+  LogoutProvider(this.context) {
     _getFCMToken();
     authService = Provider.of<BackendService>(context);
   }
-late BackendService authService;
+  late BackendService authService;
   CustomHive _customHive = CustomHive();
 
   String? fcmToken;
@@ -21,8 +21,9 @@ late BackendService authService;
   _getFCMToken() {
     fcmToken = _customHive.getFCMToken();
   }
+
   Future<void> logout() async {
-    if(fcmToken != null) {
+    if (fcmToken != null) {
       await authService.removeFcmToken(fcmToken: fcmToken!);
     }
     await _customHive.deleteToken();
@@ -59,7 +60,7 @@ class LogoutScreen extends StatelessWidget {
                 ),
                 Text(
                   'Are you sure you want to logout?',
-                  style: Theme.of(context).textTheme.bodyMedium,
+                  style: Theme.of(context).textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(

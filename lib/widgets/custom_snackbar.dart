@@ -21,7 +21,7 @@ class SnackBarHelper {
                 ? Colors.red
                 : Colors.deepOrange,
         duration: const Duration(seconds: 3),
-        dismissDirection: DismissDirection.horizontal,
+        // dismissDirection: DismissDirection.horizontal,
       ),
     );
   }
