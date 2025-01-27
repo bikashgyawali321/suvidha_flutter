@@ -30,11 +30,17 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
     _locationProvider = Provider.of<LocationProvider>(context, listen: false);
 
     newOrder = NewOrderModel(
-        serviceId: serviceId,
-        price: totalPrice,
-        longitude: _locationProvider.currentPosition?.longitude ?? 0.0,
-        lattitude: _locationProvider.currentPosition?.latitude ?? 0.0,
-        location: _locationProvider.currentAddress ?? '');
+      serviceId: serviceId,
+      price: totalPrice,
+      longitudeLatitude: LongitudeLatitudeModel(
+        type: 'Point',
+        coordinates: [
+          _locationProvider.currentPosition?.longitude ?? 0.0,
+          _locationProvider.currentPosition?.latitude ?? 0.0,
+        ],
+      ),
+      location: _locationProvider.currentAddress ?? '',
+    );
   }
 
   bool loading = false;

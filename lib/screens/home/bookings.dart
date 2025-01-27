@@ -72,6 +72,10 @@ class Bookings extends StatelessWidget {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
+                                SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.33,
+                                ),
                                 Icon(
                                   Icons.error_outline,
                                   size: 60,

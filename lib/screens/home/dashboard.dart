@@ -126,7 +126,7 @@ class Dashboard extends StatelessWidget {
                                                 ?.copyWith(
                                                   color: Theme.of(context)
                                                       .colorScheme
-                                                      .secondaryContainer,
+                                                      .primaryContainer,
                                                 ),
                                           ),
                                       ]),

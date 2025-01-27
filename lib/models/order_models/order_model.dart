@@ -9,18 +9,15 @@ class NewOrderModel {
 
   @JsonKey(name: 'price')
   final num price;
-  @JsonKey(name: 'long')
-  final double longitude;
-  @JsonKey(name: 'lat')
-  final double lattitude;
+  @JsonKey(name: 'longLat', fromJson: _longLatFromJson, toJson: _longLatToJson)
+  final LongitudeLatitudeModel longitudeLatitude;
   @JsonKey(name: 'location')
   String location;
 
   NewOrderModel({
     required this.serviceId,
     required this.price,
-    required this.longitude,
-    required this.lattitude,
+    required this.longitudeLatitude,
     required this.location,
   });
 
@@ -38,14 +35,14 @@ class OrderModel {
   final String userId;
   @JsonKey(name: 'service')
   final String serviceNameId;
-
   @JsonKey(name: 'org')
   final String orgId;
   @JsonKey(name: 'location')
   final String location;
   @JsonKey(name: 'price')
   final num price;
-
+  @JsonKey(name: 'longLat', fromJson: _longLatFromJson, toJson: _longLatToJson)
+  final LongitudeLatitudeModel longitudeLatitude;
   @JsonKey(name: 'status')
   final String status;
   @JsonKey(name: 'rating')
@@ -70,6 +67,7 @@ class OrderModel {
     required this.location,
     required this.status,
     required this.rating,
+    required this.longitudeLatitude,
     required this.review,
     required this.isBlocked,
     required this.orgId,
@@ -82,4 +80,24 @@ class OrderModel {
       _$OrderModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$OrderModelToJson(this);
+}
+
+@JsonSerializable()
+class LongitudeLatitudeModel {
+  String type;
+  List<num> coordinates;
+
+  LongitudeLatitudeModel({required this.type, required this.coordinates});
+
+  factory LongitudeLatitudeModel.fromJson(Map<String, dynamic> json) =>
+      _$LongitudeLatitudeModelFromJson(json);
+  Map<String, dynamic> toJson() => _$LongitudeLatitudeModelToJson(this);
+}
+
+LongitudeLatitudeModel _longLatFromJson(Map<String, dynamic> json) {
+  return LongitudeLatitudeModel.fromJson(json);
+}
+
+Map<String, dynamic> _longLatToJson(LongitudeLatitudeModel longLat) {
+  return longLat.toJson();
 }

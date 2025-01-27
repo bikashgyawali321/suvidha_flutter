@@ -167,7 +167,9 @@ class _HomeScreenState extends State<HomeScreen>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: GestureDetector(
-              onTap: () => context.push('/profile'),
+              onTap: () => context.push(
+                '/profile',
+              ),
               child: CircleAvatar(
                 radius: 20,
                 backgroundColor: Theme.of(context).colorScheme.secondary,
