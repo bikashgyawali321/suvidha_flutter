@@ -15,7 +15,7 @@ import 'interceptors/log_interceptor.dart';
 class BackendService extends ChangeNotifier {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://10.0.2.2:4040/api",
+      baseUrl: "http://localhost:4040/api",
     ),
   )
     ..interceptors.add(TokenInterceptor())

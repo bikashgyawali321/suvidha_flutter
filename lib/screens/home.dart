@@ -158,7 +158,7 @@ class _HomeScreenState extends State<HomeScreen>
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'सुविधा',
+          'Suvidha',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         centerTitle: false,
