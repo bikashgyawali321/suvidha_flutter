@@ -111,6 +111,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:suvidha/providers/auth_provider.dart';
 import 'package:suvidha/providers/location_provider.dart';
 import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/screens/ask_permission.dart';
@@ -152,6 +153,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   Widget build(BuildContext context) {
     final LocationProvider locationProvider = context.watch<LocationProvider>();
+    final AuthProvider authProvider = context.watch<AuthProvider>();
 
     return Scaffold(
       appBar: AppBar(
@@ -160,20 +162,32 @@ class _HomeScreenState extends State<HomeScreen>
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         centerTitle: false,
-        titleSpacing: 10,
+        titleSpacing: 15,
         actions: [
-          IconButton(
-            onPressed: () => context.push('/profile'),
-            icon: Icon(
-              Icons.account_circle_outlined,
-              size: 30,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: GestureDetector(
+              onTap: () => context.push('/profile'),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                backgroundImage: authProvider.user?.profilePicture != null
+                    ? NetworkImage(authProvider.user!.profilePicture!)
+                    : null,
+                child: authProvider.user?.profilePicture == null
+                    ? Icon(
+                        Icons.person,
+                        size: 30,
+                      )
+                    : SizedBox(),
+              ),
             ),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(10.0),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            padding: const EdgeInsets.fromLTRB(15, 0, 0, 5),
             child: Row(
               children: [
                 Icon(

@@ -11,6 +11,7 @@ class ServiceArrayResponse {
     name: 'docs',
     fromJson: _docsFromJson,
     toJson: _docsToJson,
+    defaultValue: null,
   )
   final List<DocsService> docs;
 
@@ -35,7 +36,9 @@ class ServiceArrayResponse {
 class DocsOrganization {
   @JsonKey(name: '_id')
   final String id;
-  @JsonKey(name: 'nameOrg')
+  @JsonKey(
+    name: 'nameOrg',
+  )
   final String organizationName;
 
   DocsOrganization({

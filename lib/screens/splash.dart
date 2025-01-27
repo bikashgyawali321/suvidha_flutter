@@ -34,65 +34,73 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     _authProvider = Provider.of<AuthProvider>(context);
     return Scaffold(
       backgroundColor: primaryDark,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            PlayAnimationBuilder(
-              tween: Tween<double>(begin: 0, end: 1),
-              duration: const Duration(seconds: 1),
-              builder: (context, value, _) => Transform.scale(
-                scale: Curves.easeOutQuad.transform(value),
-                child: Hero(
-                  tag: 'logo',
-                  child: Column(
-                    children: [
-                      Image.asset(
-                        'assets/icon/app_icon.png',
-                        height: 200,
-                      ),
-                      Text(
-                        'सुविधा',
-                        style:
-                            Theme.of(context).textTheme.displayMedium?.copyWith(
-                                  color: suvidhaWhite,
-                                ),
-                      ),
-                      Text(
-                        'घरमै सेवा, तपाइको सेवा हाम्रो प्राथमिकता',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Colors.amber[600],
-                              fontStyle: FontStyle.italic,
-                            ),
-                      ),
-                    ],
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.35,
+              ),
+              PlayAnimationBuilder(
+                tween: Tween<double>(begin: 0, end: 1),
+                duration: const Duration(seconds: 1),
+                builder: (context, value, _) => Transform.scale(
+                  scale: Curves.easeOutQuad.transform(value),
+                  child: Hero(
+                    tag: 'logo',
+                    child: Column(
+                      children: [
+                        Image.asset(
+                          'assets/icon/app_icon.png',
+                          height: 200,
+                        ),
+                        Text(
+                          'Suvidha',
+                          style: Theme.of(context)
+                              .textTheme
+                              .displayMedium
+                              ?.copyWith(
+                                color: suvidhaWhite,
+                              ),
+                        ),
+                        Text(
+                          'We provide services at your doorstep',
+                          style:
+                              Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: Colors.amber[600],
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                onCompleted: () async {
+                  setState(() {
+                    loading = true;
+                  });
+                  await context.read<NotificationService>().initilize();
+                  await Future.delayed(const Duration(seconds: 1));
+                  _handleRouting();
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 50),
+                child: Opacity(
+                  opacity: loading ? 1 : 0,
+                  child: LoopAnimationBuilder(
+                    tween: ColorTween(begin: primary, end: secondary),
+                    duration: const Duration(seconds: 1),
+                    builder: (context, value, child) => LinearProgressIndicator(
+                      color: value,
+                      backgroundColor: Colors.transparent,
+                    ),
                   ),
                 ),
               ),
-              onCompleted: () async {
-                setState(() {
-                  loading = true;
-                });
-                await context.read<NotificationService>().initilize();
-                await Future.delayed(const Duration(seconds: 1));
-                _handleRouting();
-              },
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50),
-              child: Opacity(
-                opacity: loading ? 1 : 0,
-                child: LoopAnimationBuilder(
-                  tween: ColorTween(begin: primary, end: secondary),
-                  duration: const Duration(seconds: 1),
-                  builder: (context, value, child) => LinearProgressIndicator(
-                    color: value,
-                    backgroundColor: Colors.transparent,
-                  ),
-                ),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -9,12 +9,13 @@ import 'package:suvidha/models/backend_response.dart';
 import 'package:suvidha/services/interceptors/token_interceptor.dart';
 import '../models/auth_models/update_user_request.dart';
 import '../models/bookings/booking_model.dart';
+import '../models/order_models/order_model.dart';
 import 'interceptors/log_interceptor.dart';
 
 class BackendService extends ChangeNotifier {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://127.0.0.1:4040/api",
+      baseUrl: "http://10.0.2.2:4040/api",
     ),
   )
     ..interceptors.add(TokenInterceptor())
@@ -216,7 +217,10 @@ class BackendService extends ChangeNotifier {
   //remove fcm token
   Future<BackendResponse> removeFcmToken({required String fcmToken}) async {
     return await handleRequest(
-      request: _dio.post('/auth/removefcm', data: {'fcmToken': fcmToken}),
+      request: _dio.post(
+        '/auth/removefcm',
+        data: {'fcmToken': fcmToken},
+      ),
       titleOfRequest: 'removing fcm token',
     );
   }
@@ -288,5 +292,16 @@ class BackendService extends ChangeNotifier {
           '/booking/',
         ),
         titleOfRequest: "fetching all bookings by userId");
+  }
+
+  //place an order
+  Future<BackendResponse> createOrder({required NewOrderModel newOrder}) async {
+    return await handleRequest(
+      request: _dio.post(
+        '/order/',
+        data: newOrder.toJson(),
+      ),
+      titleOfRequest: 'creating order',
+    );
   }
 }

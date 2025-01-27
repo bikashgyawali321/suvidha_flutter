@@ -1,3 +1,5 @@
+// ignore_for_file: prefer_interpolation_to_compose_strings
+
 import 'package:intl/intl.dart';
 
 DateFormat get _dateTimeFormat => DateFormat('yyyy-MM-dd hh:mm aa');
@@ -20,5 +22,12 @@ extension DateX on DateTime {
 
   String get toVerbalTime {
     return _verbalTime.format(this);
+  }
+}
+
+extension CurrencyX on num {
+  String get toCurrency {
+    // Ensures proper rounding and removes trailing decimals if the number is whole
+    return 'Rs. ${toStringAsFixed(truncateToDouble() == this ? 0 : 2)}';
   }
 }

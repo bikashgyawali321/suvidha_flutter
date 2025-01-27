@@ -29,6 +29,6 @@ class BookingDetails extends StatelessWidget {
 //use this extension after price , like price.toCurrency
 extension on num {
   String get toCurrency {
-    return 'Rs ' + this.toString();
+    return 'Rs. ' + this.toString();
   }
 }

@@ -9,9 +9,9 @@ import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/screens/home.dart';
 import 'package:suvidha/screens/home/booking/booking_details.dart';
 import 'package:suvidha/screens/home/bookings.dart';
+import 'package:suvidha/screens/home/services/service_providers_screen.dart';
+import 'services/notification.dart';
 import 'package:suvidha/screens/splash.dart';
-import 'package:suvidha/services/notification.dart';
-
 import 'providers/auth_provider.dart';
 import 'providers/theme_provider.dart';
 import 'screens/home/notification_screen.dart';
@@ -88,6 +88,15 @@ GoRouter _router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: '/service/details',
+      builder: (context, state) {
+        final serviceName = state.extra as String;
+        return ServiceProvidersScreen(
+          serviceName: serviceName,
+        );
+      },
+    )
   ],
 );
 

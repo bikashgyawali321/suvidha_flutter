@@ -5,6 +5,8 @@ import 'package:suvidha/models/auth_models/user_model.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/widgets/custom_snackbar.dart';
 
+import '../services/notification.dart';
+
 class AuthProvider extends ChangeNotifier {
   UserModel? user;
   final BackendService service;
@@ -46,6 +48,7 @@ class AuthProvider extends ChangeNotifier {
           );
           return;
         }
+        context.read<NotificationService>().sendFCMToken();
         context.go('/home');
 
         debugPrint("User details: ${user!.name}");

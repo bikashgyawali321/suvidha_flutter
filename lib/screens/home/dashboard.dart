@@ -1,26 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
+import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/widgets/loading_screen.dart';
 import '../../providers/auth_provider.dart';
-import '../../services/backend_service.dart';
-
-class DashboardProvider extends ChangeNotifier {
-  final BuildContext context;
-  late BackendService _backendService;
-  late ServiceProvider _serviceProvider;
-  DashboardProvider(this.context) {
-    initialize();
-  }
-
-  bool loading = false;
-  late AuthProvider _authProvider;
-  void initialize() {
-    _backendService = Provider.of<BackendService>(context);
-    _authProvider = Provider.of<AuthProvider>(context, listen: false);
-    _serviceProvider = context.watch<ServiceProvider>();
-  }
-}
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key, required this.controller});
@@ -28,150 +12,136 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => DashboardProvider(context),
-      builder: (context, child) => Consumer<DashboardProvider>(
-        builder: (context, provider, child) => provider._serviceProvider.loading
-            ? const LoadingScreen()
-            : provider._serviceProvider.services.isEmpty
-                ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.error_outline,
-                          size: 60,
-                        ),
-                        Text(
-                          'Looks like there are no services available at there moment, please try again later!',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                      ],
+    final _serviceProvider = Provider.of<ServiceProvider>(context);
+    final _authProvider = Provider.of<AuthProvider>(context);
+    bool isRecommended = _serviceProvider.isRecommendedService();
+
+    return _serviceProvider.loading
+        ? const LoadingScreen()
+        : _serviceProvider.services.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 60,
                     ),
-                  )
-                : RefreshIndicator(
-                    onRefresh: () => provider._serviceProvider.getAllServices(),
-                    child: SafeArea(
-                      child: SingleChildScrollView(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 8),
-                              child: Text(
-                                provider._authProvider.greetingMessage,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                              ),
+                    Text(
+                      'Looks like there are no services available at this moment, please try again later!',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
+              )
+            : RefreshIndicator(
+                onRefresh: () => _serviceProvider.getAllServices(),
+                child: SafeArea(
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              left: 5,
+                              bottom: 5,
+                              top: 3,
                             ),
-                            SizedBox(
-                              height: 8,
-                            ),
-                            if (provider._serviceProvider.recommendedServices
-                                .isNotEmpty) ...[
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      'Recommended for you',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    for (final recommendedService in provider
-                                        ._serviceProvider
-                                        .recommendedServices) ...[
-                                      ListTile(
-                                        title: Text(recommendedService
-                                            .serviceName.name),
-                                      )
-                                    ]
-                                  ],
-                                ),
-                              ),
-                              SizedBox(
-                                height: 5,
-                              ),
-                            ],
-                            Card(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 8,
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Choose a service to get started!',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    GridView.builder(
-                                      controller: controller,
-                                      shrinkWrap: true,
-                                      itemCount: provider
-                                          ._serviceProvider.services.length,
-                                      gridDelegate:
-                                          const SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount: 2,
-                                        crossAxisSpacing: 3,
-                                        mainAxisSpacing: 5,
-                                        childAspectRatio: 2.5,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _authProvider.greetingMessage,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w400,
+                                        fontStyle: FontStyle.italic,
                                       ),
-                                      itemBuilder: (context, index) {
-                                        final service = provider
-                                            ._serviceProvider.services[index];
-                                        return Card(
-                                          // color: Color.lerp(
-                                          //   Theme.of(context)
-                                          //       .colorScheme
-                                          //       .surfaceContainer,
-                                          //   service.serviceName.name.toColor,
-                                          //   0.7,
-                                          // ),
-                                          child: Center(
-                                            child: Text(
-                                              service.serviceName.name,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ],
                                 ),
-                              ),
+                                Text(
+                                  'Choose a service to get started!',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 90,
+                          ),
+                          GridView.builder(
+                            controller: controller,
+                            shrinkWrap: true,
+                            itemCount: _serviceProvider.serviceNames!.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 2,
+                              crossAxisSpacing: 2,
+                              mainAxisSpacing: 2,
+                              childAspectRatio: 1.7,
                             ),
-                          ],
-                        ),
+                            itemBuilder: (context, index) {
+                              final serviceName =
+                                  _serviceProvider.serviceNames![index];
+
+                              return GestureDetector(
+                                onTap: () => context.push(
+                                  '/service/details',
+                                  extra: serviceName,
+                                ),
+                                child: Card(
+                                  // color: Color.lerp(
+                                  //   Theme.of(context)
+                                  //       .colorScheme
+                                  //       .surfaceContainer,
+                                  //   serviceName.toColor,
+                                  //   0.7,
+                                  // ),
+                                  child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Center(
+                                          child: Text(
+                                            serviceName.toUpperCase(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelLarge,
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 3,
+                                        ),
+                                        if (isRecommended)
+                                          Text(
+                                            'Recommended',
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .labelSmall
+                                                ?.copyWith(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondaryContainer,
+                                                ),
+                                          ),
+                                      ]),
+                                ),
+                              );
+                            },
+                          ),
+                          SizedBox(
+                            height: 90,
+                          ),
+                        ],
                       ),
                     ),
                   ),
-      ),
-    );
+                ),
+              );
   }
 }

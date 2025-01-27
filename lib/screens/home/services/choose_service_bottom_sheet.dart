@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:suvidha/extensions.dart';
 import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/screens/home/booking/add_booking.dart';
 import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 
-class ServiceListBottomSheet extends StatefulWidget {
+import '../../../models/service_model/service_array_response.dart';
+
+class ServiceListBottomSheet extends StatelessWidget {
   const ServiceListBottomSheet({super.key});
 
   static Future<T?> show<T>(BuildContext context) {
@@ -16,17 +19,11 @@ class ServiceListBottomSheet extends StatefulWidget {
   }
 
   @override
-  State<ServiceListBottomSheet> createState() => _ServiceListBottomSheetState();
-}
-
-class _ServiceListBottomSheetState extends State<ServiceListBottomSheet> {
-  final PageController _pageController = PageController();
-  int _currentPage = 0;
-
-  @override
   Widget build(BuildContext context) {
     final serviceProvider = context.watch<ServiceProvider>();
-    final services = serviceProvider.services;
+    final serviceNames = serviceProvider.serviceNames;
+
+    bool isRecommendedService = serviceProvider.isRecommendedService();
 
     return SafeArea(
       child: SingleChildScrollView(
@@ -37,7 +34,7 @@ class _ServiceListBottomSheetState extends State<ServiceListBottomSheet> {
             Center(
               child: FormBottomSheetHeader(title: 'Choose a Service'),
             ),
-            serviceProvider.loading && services.isEmpty
+            serviceProvider.loading && serviceNames!.isEmpty
                 ? const SizedBox()
                 : Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -56,7 +53,7 @@ class _ServiceListBottomSheetState extends State<ServiceListBottomSheet> {
                 ? const Center(
                     child: CircularProgressIndicator(),
                   )
-                : services.isEmpty
+                : serviceNames!.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -75,22 +72,24 @@ class _ServiceListBottomSheetState extends State<ServiceListBottomSheet> {
                         ),
                       )
                     : Column(
-                        children: services
+                        children: serviceNames
                             .map(
-                              (service) => Card(
+                              (serviceName) => Card(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(0),
                                 ),
                                 child: ListTile(
                                   title: Text(
-                                      service.serviceName.name.toUpperCase()),
-                                  subtitle: Text(service.org.organizationName),
+                                    serviceName.toUpperCase(),
+                                  ),
+                                  trailing: isRecommendedService
+                                      ? Text('Recommended')
+                                      : null,
                                   onTap: () {
                                     context.pop();
-                                    AddBookingBottomSheet.show(
-                                      context: context,
-                                      serviceId: service.id,
-                                      totalPrice: service.price,
+                                    ShowBookingOrganizationsBottomSheet.show(
+                                      context,
+                                      serviceName,
                                     );
                                   },
                                 ),
@@ -106,10 +105,74 @@ class _ServiceListBottomSheetState extends State<ServiceListBottomSheet> {
       ),
     );
   }
+}
+
+class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
+  const ShowBookingOrganizationsBottomSheet(
+      {super.key, required this.serviceName});
+  final String serviceName;
+
+  static Future<T?> show<T>(BuildContext context, String serviceName) {
+    return showModalBottomSheet<T>(
+      context: context,
+      builder: (context) => ShowBookingOrganizationsBottomSheet(
+        serviceName: serviceName,
+      ),
+    );
+  }
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    final serviceProvider = context.watch<ServiceProvider>();
+    List<DocsService> services = serviceProvider.services
+        .where((element) => element.serviceName.name == serviceName)
+        .toList();
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            FormBottomSheetHeader(title: 'Choose a Provider'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  Text(
+                    'Select a provider to get started with your booking.',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  SizedBox(height: 8),
+                ],
+              ),
+            ),
+            for (final service in services) ...[
+              Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(0),
+                ),
+                child: ListTile(
+                  title: Text(
+                    service.org.organizationName,
+                  ),
+                  subtitle: Text('Service Price: ${service.price.toCurrency}'),
+                  onTap: () {
+                    context.pop();
+                    AddBookingBottomSheet.show(
+                      context: context,
+                      serviceId: service.id,
+                      totalPrice: service.price,
+                    );
+                  },
+                ),
+              )
+            ],
+            SizedBox(
+              height: 5,
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
