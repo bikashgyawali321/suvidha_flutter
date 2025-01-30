@@ -39,7 +39,9 @@ class AddBookingProvider extends ChangeNotifier {
 
     newBooking = NewBooking(
       serviceId: choosedServiceId,
-      bookingDate: DateTime.now(),
+      bookingDate: DateTime.now().add(
+        Duration(days: 1),
+      ),
       location: _locationProvider.currentAddress ?? '',
       totalPrice: totalPrice,
     );
@@ -58,14 +60,10 @@ class AddBookingProvider extends ChangeNotifier {
       minimumDate: DateTime.now(),
       options: BoardDateTimeOptions(
         activeColor: Theme.of(context).colorScheme.primary,
-
-        //picker format should be like month in Jan, day in 01, year in 2021
         pickerFormat: 'y M d | hh:mm aa',
         foregroundColor: Colors.transparent,
         useAmpm: true,
-
         showDateButton: true,
-
         boardTitle: 'Choose a date to book the service',
         inputable: false,
         pickerSubTitles: BoardDateTimeItemTitles(
@@ -118,7 +116,7 @@ class AddBookingProvider extends ChangeNotifier {
     } finally {
       context.pop();
       loading = false;
-      bookingsProvider.getAllBookings();
+      bookingsProvider.fetchBookings();
       notifyListeners();
     }
   }
@@ -200,10 +198,10 @@ class AddBookingBottomSheet extends StatelessWidget {
                             //date should not be beyond three days from today and it should be atleast 1 hour from now
                             if (provider.newBooking!.bookingDate.isBefore(
                               DateTime.now().add(
-                                Duration(hours: 1),
+                                Duration(days: 1),
                               ),
                             )) {
-                              return 'Booking date should be atleast 1 hour from now';
+                              return 'Booking date should be atleast 1 day behind from now';
                             }
                             if (provider.newBooking!.bookingDate.isAfter(
                               DateTime.now().add(
@@ -243,7 +241,7 @@ class AddBookingBottomSheet extends StatelessWidget {
                         SizedBox(height: 12),
                         //for total price
                         TextFormField(
-                          initialValue: provider.totalPrice.toNumberFormat(),
+                          initialValue: provider.totalPrice.toCurrency,
                           readOnly: true,
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.symmetric(
@@ -335,13 +333,5 @@ class AddBookingBottomSheet extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-//extension to remove decimal points from number and add commas
-extension NumberFormat on double {
-  String toNumberFormat() {
-    return toStringAsFixed(0).replaceAllMapped(
-        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
   }
 }

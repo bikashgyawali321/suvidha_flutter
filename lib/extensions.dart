@@ -27,7 +27,6 @@ extension DateX on DateTime {
 
 extension CurrencyX on num {
   String get toCurrency {
-    // Ensures proper rounding and removes trailing decimals if the number is whole
     return 'Rs. ${toStringAsFixed(truncateToDouble() == this ? 0 : 2)}';
   }
 }

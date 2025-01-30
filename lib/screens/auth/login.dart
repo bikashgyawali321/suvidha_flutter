@@ -34,6 +34,8 @@ class LoginProvider extends ChangeNotifier {
 
     final response = await _backendService.login(request);
     if (response.result != null) {
+      loading = false;
+      
       AuthToken token = AuthToken.fromJson(response.result!);
       await CustomHive().saveAuthToken(token);
       context.go('/');

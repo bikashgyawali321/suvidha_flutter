@@ -6,6 +6,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:suvidha/models/auth_models/login_request.dart';
 import 'package:suvidha/models/auth_models/register_request.dart';
 import 'package:suvidha/models/backend_response.dart';
+import 'package:suvidha/models/listing_model.dart';
 import 'package:suvidha/services/interceptors/token_interceptor.dart';
 import '../models/auth_models/update_user_request.dart';
 import '../models/bookings/booking_model.dart';
@@ -286,10 +287,11 @@ class BackendService extends ChangeNotifier {
   }
 
   //get all bookings
-  Future<BackendResponse> getAllBookings() async {
+  Future<BackendResponse> getAllBookings({ListingModel? listingModel}) async {
     return await handleRequest(
         request: _dio.get(
           '/booking/',
+          queryParameters: listingModel?.toJson(),
         ),
         titleOfRequest: "fetching all bookings by userId");
   }
@@ -302,6 +304,14 @@ class BackendService extends ChangeNotifier {
         data: newOrder.toJson(),
       ),
       titleOfRequest: 'creating order',
+    );
+  }
+
+  //fetch orders by id
+  Future<BackendResponse> getOrderById({required String orderId}) async {
+    return await handleRequest(
+      request: _dio.get('/order/$orderId'),
+      titleOfRequest: 'fetching order by id',
     );
   }
 }
