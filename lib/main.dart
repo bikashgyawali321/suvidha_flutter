@@ -21,10 +21,12 @@ import 'screens/auth/register.dart';
 import 'services/backend_service.dart';
 import 'services/custom_hive.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptionsAndroid.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
 
   await CustomHive().init();
@@ -54,6 +56,7 @@ class ProviderWrappedApp extends StatelessWidget {
 }
 
 GoRouter _router = GoRouter(
+  navigatorKey: navigatorKey,
   routes: [
     GoRoute(
       path: '/',
@@ -106,7 +109,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'सुविधा',
+      title: 'Suvidha',
       themeMode: context.watch<ThemeProvider>().themeMode,
       // themeMode: ThemeMode.dark,
       theme: ThemeData(

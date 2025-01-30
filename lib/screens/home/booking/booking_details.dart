@@ -1,5 +1,3 @@
-// ignore_for_file: unnecessary_this, prefer_interpolation_to_compose_strings
-
 import 'package:flutter/material.dart';
 import 'package:suvidha/extensions.dart';
 import 'package:suvidha/models/bookings/booking_model.dart';
@@ -17,13 +15,13 @@ class BookingDetails extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 13),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Basic Information',
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              'Here are the details of your booking',
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
             ),
@@ -62,7 +60,7 @@ class BookingDetails extends StatelessWidget {
                     customDivider(),
                     ListTile(
                       title: Text(
-                        'Location',
+                        'Address',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -75,7 +73,7 @@ class BookingDetails extends StatelessWidget {
                     customDivider(),
                     ListTile(
                       title: Text(
-                        'Service Price',
+                        'Price',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -113,8 +111,17 @@ class BookingDetails extends StatelessWidget {
                     ),
                     customDivider(),
                     ListTile(
+                      trailing: booking.service.images!.isNotEmpty
+                          ? CircleAvatar(
+                              radius: 25,
+                              backgroundImage: booking
+                                      .service.images!.isNotEmpty
+                                  ? NetworkImage(booking.service.images!.first)
+                                  : null,
+                            )
+                          : null,
                       title: Text(
-                        'Service Provider Name',
+                        'Service Provider',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -127,7 +134,7 @@ class BookingDetails extends StatelessWidget {
                     customDivider(),
                     ListTile(
                       title: Text(
-                        'Service Provider Phone Number',
+                        'Mobile Number',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -138,43 +145,22 @@ class BookingDetails extends StatelessWidget {
                       ),
                     ),
                     customDivider(),
-                    if (booking.optionalContact != null)
-                      ListTile(
-                        title: Text(
-                          'Optional Contact',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        subtitle: Text(
-                          booking.optionalContact ?? 'N/A',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                    ListTile(
+                      title: Text(
+                        'Email',
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
-                    customDivider(),
-                    if (booking.optionalContact != null)
-                      ListTile(
-                        title: Text(
-                          'Optional Email',
-                          style:
-                              Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                        ),
-                        subtitle: Text(
-                          booking.optionalEmail ?? 'N/A',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
+                      subtitle: Text(
+                        booking.service.serviceProviderEmail,
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
+                    ),
                   ],
                 ),
               ),
             ),
-
-            //TODO: work here to show the booking details , ashma
-            //najane sodhne , use card , refer to suvidha org
-            //tei mathi ko kura booking ko kura lai tile banayera dekhauni ta ho
           ],
         ),
       ),
@@ -186,15 +172,8 @@ class BookingDetails extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Divider(
         thickness: 0,
-        color: Colors.blueGrey[400],
+        height: 0,
       ),
     );
-  }
-}
-
-//use this extension after price , like price.toCurrency
-extension on num {
-  String get toCurrency {
-    return 'Rs. ' + this.toString();
   }
 }

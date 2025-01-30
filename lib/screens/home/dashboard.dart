@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
-import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/widgets/loading_screen.dart';
-import '../../providers/auth_provider.dart';
 
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key, required this.controller});
@@ -13,7 +11,6 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _serviceProvider = Provider.of<ServiceProvider>(context);
-    final _authProvider = Provider.of<AuthProvider>(context);
     bool isRecommended = _serviceProvider.isRecommendedService();
 
     return _serviceProvider.loading
@@ -55,16 +52,6 @@ class Dashboard extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  _authProvider.greetingMessage,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w400,
-                                        fontStyle: FontStyle.italic,
-                                      ),
-                                ),
                                 Text(
                                   'Choose a service to get started!',
                                   style: Theme.of(context).textTheme.titleLarge,

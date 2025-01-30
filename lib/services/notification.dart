@@ -1,16 +1,20 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:suvidha/main.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
+import 'package:suvidha/widgets/custom_button.dart';
+import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 
 FirebaseMessaging _messaging = FirebaseMessaging.instance;
 
 class NotificationService extends ChangeNotifier {
   late NotificationSettings? _settings;
 
-  BackendService authService;
+  BackendService backendService;
 
-  NotificationService(this.authService);
+  NotificationService(this.backendService);
   final CustomHive _customHive = CustomHive();
 
   bool get canAskPermission =>
@@ -27,8 +31,14 @@ class NotificationService extends ChangeNotifier {
     final isSupported = await _messaging.isSupported();
     if (!isSupported) return;
     _settings = await _messaging.getNotificationSettings();
+    FirebaseMessaging.onMessage.listen(_handleForegroundNotifications);
+    FirebaseMessaging.onMessageOpenedApp.listen(_handleBackgroundNotifications);
 
-    // canAskPermission == true;
+    RemoteMessage? initialMessage = await _messaging.getInitialMessage();
+    if (initialMessage != null) {
+      _handleNotifications(initialMessage);
+    }
+
     notifyListeners();
   }
 
@@ -57,14 +67,78 @@ class NotificationService extends ChangeNotifier {
     if (!isNotificationEnabled) return;
 
     final token = await _messaging.getToken();
+    debugPrint('FCM Token: $token');
     if (token == null) return;
 
     if (_customHive.getFCMToken() == token) return;
 
-    final resp = await authService.addFcmToken(fcmToken: token);
+    final resp = await backendService.addFcmToken(fcmToken: token);
     if (resp.statusCode == 200) {
       debugPrint('FCM Token sent');
       await _customHive.saveFCMToken(token);
     }
+  }
+
+  void _handleForegroundNotifications(RemoteMessage message) {
+    //Just display the notification to the user
+    if (message.data.isNotEmpty) {
+      debugPrint('Handling foreground notification, data: ${message.data}');
+      _handleShowNotificationDialog(message);
+    }
+  }
+
+  void _handleBackgroundNotifications(RemoteMessage message) {
+    debugPrint('Handling background notification, data: ${message.data}');
+    //Handle the notification data
+    _handleNotifications(message);
+  }
+
+  void _handleNotifications(RemoteMessage message) {
+    final String? orderId = message.data['orderId'];
+
+    if (orderId != null) {
+      //TODO:fetch order from order id  and navigate to order details page
+      GoRouter.of(navigatorKey.currentContext!).go('/order/$orderId');
+    }
+  }
+
+  void _handleShowNotificationDialog(RemoteMessage message) {
+    showModalBottomSheet(
+      context: navigatorKey.currentContext!,
+      builder: (context) {
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+              child: Column(
+                children: [
+                  FormBottomSheetHeader(
+                    title: message.notification?.title ?? 'Notification',
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    message.notification?.body ?? 'Update on your order status',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  CustomButton(
+                    label: 'Ok',
+                    onPressed: () => navigatorKey.currentState!.pop(),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      },
+    );
   }
 }

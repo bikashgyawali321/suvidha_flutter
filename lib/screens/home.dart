@@ -154,6 +154,7 @@ class _HomeScreenState extends State<HomeScreen>
   Widget build(BuildContext context) {
     final LocationProvider locationProvider = context.watch<LocationProvider>();
     final AuthProvider authProvider = context.watch<AuthProvider>();
+    final _authProvider = Provider.of<AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -187,24 +188,39 @@ class _HomeScreenState extends State<HomeScreen>
           ),
         ],
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(10.0),
+          preferredSize: Size.fromHeight(index == 1 ? 35 : 20),
           child: Padding(
             padding: const EdgeInsets.fromLTRB(15, 0, 0, 5),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(
-                  Icons.location_pin,
-                  size: 20,
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_pin,
+                      size: 20,
+                    ),
+                    Text(
+                      locationProvider.loading
+                          ? 'Fetching location...'
+                          : locationProvider.currentAddress ??
+                              'Location not found',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontStyle: FontStyle.italic,
+                          ),
+                    ),
+                  ],
                 ),
-                Text(
-                  locationProvider.loading
-                      ? 'Fetching location...'
-                      : locationProvider.currentAddress ?? 'Location not found',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontStyle: FontStyle.italic,
-                      ),
-                ),
+                index == 1
+                    ? Text(
+                        _authProvider.greetingMessage,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                              fontStyle: FontStyle.italic,
+                            ),
+                      )
+                    : SizedBox(),
               ],
             ),
           ),
@@ -215,9 +231,7 @@ class _HomeScreenState extends State<HomeScreen>
           IndexedStack(
             index: index,
             children: [
-              Bookings(
-                controller: _mainContentScroller,
-              ),
+              BookingsScreen(),
               Dashboard(controller: _mainContentScroller),
               Orders(
                 controller: _mainContentScroller,
