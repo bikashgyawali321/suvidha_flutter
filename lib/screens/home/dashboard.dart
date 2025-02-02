@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/widgets/loading_screen.dart';
 
+import 'orders/add_order_bottom_sheet.dart';
+
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key, required this.controller});
   final ScrollController controller;
@@ -75,10 +77,14 @@ class Dashboard extends StatelessWidget {
                                   _serviceProvider.serviceNames![index];
 
                               return GestureDetector(
-                                onTap: () => context.push(
-                                  '/service/details',
-                                  extra: serviceName,
-                                ),
+                                onTap: () async {
+                                  await AddOrderBottomSheet.show(
+                                    context: context,
+                                    serviceNameId: _serviceProvider
+                                        .getServiceId(serviceName),
+                                  );
+                                  _serviceProvider.initialize();
+                                },
                                 child: Card(
                                   // color: Color.lerp(
                                   //   Theme.of(context)

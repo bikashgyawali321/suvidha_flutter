@@ -14,7 +14,6 @@ class ServiceProvider extends ChangeNotifier {
   void initialize() {
     _backendService = Provider.of<BackendService>(context, listen: false);
     getAllServices();
-    getRecommendedServices();
     sortServices();
   }
 
@@ -22,10 +21,21 @@ class ServiceProvider extends ChangeNotifier {
 
   List<DocsService> services = [];
   List<String>? serviceNames = [];
+
   List<String>? recommendedServiceNames = [];
 
   ServiceArrayResponse? serviceArrayResponse;
   List<DocsService> recommendedServices = [];
+
+  //get serviceName id from service name
+  String getServiceId(String serviceName) {
+    for (final service in services) {
+      if (service.serviceName.name == serviceName) {
+        return service.serviceName.id;
+      }
+    }
+    return '';
+  }
 
   // get all services provided to the users
   Future<void> getAllServices() async {
@@ -42,6 +52,8 @@ class ServiceProvider extends ChangeNotifier {
           ? services = serviceArrayResponse.docs
           : services = [];
       loading = false;
+      await getRecommendedServices();
+
       getServicesNames();
       notifyListeners();
     } else {
