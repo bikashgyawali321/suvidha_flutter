@@ -98,7 +98,10 @@ class NotificationService extends ChangeNotifier {
 
     if (orderId != null) {
       //TODO:fetch order from order id  and navigate to order details page
-      GoRouter.of(navigatorKey.currentContext!).go('/order/$orderId');
+      GoRouter.of(navigatorKey.currentContext!).go(
+        '/order_detail',
+        extra: orderId,
+      );
     }
   }
 

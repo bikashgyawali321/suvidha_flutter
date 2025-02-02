@@ -9,7 +9,6 @@ part of 'order_model.dart';
 NewOrderModel _$NewOrderModelFromJson(Map<String, dynamic> json) =>
     NewOrderModel(
       serviceId: json['service'] as String,
-      price: json['price'] as num,
       longitudeLatitude:
           _longLatFromJson(json['longLat'] as Map<String, dynamic>),
       location: json['location'] as String,
@@ -18,7 +17,6 @@ NewOrderModel _$NewOrderModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$NewOrderModelToJson(NewOrderModel instance) =>
     <String, dynamic>{
       'service': instance.serviceId,
-      'price': instance.price,
       'longLat': _longLatToJson(instance.longitudeLatitude),
       'location': instance.location,
     };

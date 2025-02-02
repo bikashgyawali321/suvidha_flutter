@@ -7,8 +7,6 @@ class NewOrderModel {
   @JsonKey(name: 'service')
   final String serviceId;
 
-  @JsonKey(name: 'price')
-  final num price;
   @JsonKey(name: 'longLat', fromJson: _longLatFromJson, toJson: _longLatToJson)
   final LongitudeLatitudeModel longitudeLatitude;
   @JsonKey(name: 'location')
@@ -16,7 +14,6 @@ class NewOrderModel {
 
   NewOrderModel({
     required this.serviceId,
-    required this.price,
     required this.longitudeLatitude,
     required this.location,
   });

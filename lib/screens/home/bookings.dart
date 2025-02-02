@@ -151,11 +151,16 @@ class BookingsScreen extends StatelessWidget {
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       SizedBox(height: 10),
-                      CustomButton(
-                        label: 'Create New Booking',
-                        onPressed: () {
-                          ServiceListBottomSheet.show(context);
-                        },
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 15,
+                        ),
+                        child: CustomButton(
+                          label: 'Create New Booking',
+                          onPressed: () {
+                            ServiceListBottomSheet.show(context);
+                          },
+                        ),
                       ),
                     ],
                   )

@@ -4,17 +4,21 @@ import 'package:provider/provider.dart';
 import 'package:suvidha/extensions.dart';
 import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/screens/home/booking/add_booking.dart';
+import 'package:suvidha/screens/home/orders/add_order_bottom_sheet.dart';
 import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
 
 import '../../../models/service_model/service_array_response.dart';
 
 class ServiceListBottomSheet extends StatelessWidget {
-  const ServiceListBottomSheet({super.key});
+  const ServiceListBottomSheet({super.key, this.isForOrder});
+  final bool? isForOrder;
 
-  static Future<T?> show<T>(BuildContext context) {
+  static Future<T?> show<T>(BuildContext context, {bool? isForOrder}) {
     return showModalBottomSheet<T>(
       context: context,
-      builder: (context) => const ServiceListBottomSheet(),
+      builder: (context) => ServiceListBottomSheet(
+        isForOrder: isForOrder ?? false,
+      ),
     );
   }
 
@@ -42,7 +46,7 @@ class ServiceListBottomSheet extends StatelessWidget {
                       children: [
                         const SizedBox(height: 10),
                         Text(
-                          'Select a service to get started with your booking.',
+                          'Select a service to get started with your ${isForOrder == true ? 'order' : 'booking'}.',
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         SizedBox(height: 8),
@@ -109,14 +113,17 @@ class ServiceListBottomSheet extends StatelessWidget {
 
 class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
   const ShowBookingOrganizationsBottomSheet(
-      {super.key, required this.serviceName});
+      {super.key, required this.serviceName, this.isForOrder});
   final String serviceName;
+  final bool? isForOrder;
 
-  static Future<T?> show<T>(BuildContext context, String serviceName) {
+  static Future<T?> show<T>(BuildContext context, String serviceName,
+      {bool? isForOrder}) {
     return showModalBottomSheet<T>(
       context: context,
       builder: (context) => ShowBookingOrganizationsBottomSheet(
         serviceName: serviceName,
+        isForOrder: isForOrder ?? false,
       ),
     );
   }
@@ -139,7 +146,7 @@ class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
                 children: [
                   const SizedBox(height: 10),
                   Text(
-                    'Select a provider to get started with your booking.',
+                    'Select a provider to get started with your ${isForOrder == true ? 'order' : 'booking'}.',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   SizedBox(height: 8),
@@ -158,11 +165,16 @@ class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
                   subtitle: Text('Service Price: ${service.price.toCurrency}'),
                   onTap: () {
                     context.pop();
-                    AddBookingBottomSheet.show(
-                      context: context,
-                      serviceId: service.id,
-                      totalPrice: service.price,
-                    );
+                    isForOrder == true
+                        ? AddOrderBottomSheet.show(
+                            context: context,
+                            serviceNameId: service.serviceName.id,
+                          )
+                        : AddBookingBottomSheet.show(
+                            context: context,
+                            serviceId: service.id,
+                            totalPrice: service.price,
+                          );
                   },
                 ),
               )

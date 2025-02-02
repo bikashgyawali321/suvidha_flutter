@@ -44,9 +44,8 @@ class ServiceProvidersScreen extends StatelessWidget {
                         ? Text('Recommended')
                         : null,
                     onTap: () => AddOrderBottomSheet.show(
-                      serviceId: service.id,
+                      serviceNameId: service.id,
                       context: context,
-                      totalPrice: service.price,
                     ),
                   ),
                 );

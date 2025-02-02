@@ -11,12 +11,13 @@ import 'package:suvidha/services/interceptors/token_interceptor.dart';
 import '../models/auth_models/update_user_request.dart';
 import '../models/bookings/booking_model.dart';
 import '../models/order_models/order_model.dart';
+import '../models/review_rating_model/review_rating.dart';
 import 'interceptors/log_interceptor.dart';
 
 class BackendService extends ChangeNotifier {
   final Dio _dio = Dio(
     BaseOptions(
-      baseUrl: "http://localhost:4040/api",
+      baseUrl: "http://127.0.0.1:4040/api",
     ),
   )
     ..interceptors.add(TokenInterceptor())
@@ -79,7 +80,7 @@ class BackendService extends ChangeNotifier {
   Future<BackendResponse> verifyEmail(
       {required String email, required num otp}) async {
     return await handleRequest(
-      request: _dio.post('/auth/verifyOtp', data: {
+      request: _dio.post('/auth/verifyEmail', data: {
         'email': email,
         'otp': otp,
       }),
@@ -312,6 +313,18 @@ class BackendService extends ChangeNotifier {
     return await handleRequest(
       request: _dio.get('/order/$orderId'),
       titleOfRequest: 'fetching order by id',
+    );
+  }
+
+  //post an review
+  Future<BackendResponse> createReviewRatings(
+      {required NewReviewRatingModel newReviewRatingModel}) async {
+    return await handleRequest(
+      request: _dio.post(
+        '/review/',
+        data: newReviewRatingModel.toJson(),
+      ),
+      titleOfRequest: 'creating review and rating',
     );
   }
 }

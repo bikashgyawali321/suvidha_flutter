@@ -12,13 +12,12 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
   final BuildContext context;
   late BackendService _backendService;
   late LocationProvider _locationProvider;
-  final num totalPrice;
   final String serviceId;
 
   AddOrderBottomSheetProvider(
       {required this.context,
-      required this.totalPrice,
       required this.serviceId}) {
+    debugPrint(serviceId);
     initialize();
   }
 
@@ -31,12 +30,11 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
 
     newOrder = NewOrderModel(
       serviceId: serviceId,
-      price: totalPrice,
       longitudeLatitude: LongitudeLatitudeModel(
         type: 'Point',
         coordinates: [
-          _locationProvider.currentPosition?.longitude ?? 0.0,
           _locationProvider.currentPosition?.latitude ?? 0.0,
+          _locationProvider.currentPosition?.longitude ?? 0.0,
         ],
       ),
       location: _locationProvider.currentAddress ?? '',
@@ -84,24 +82,20 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
 }
 
 class AddOrderBottomSheet extends StatelessWidget {
-  final num totalPrice;
-  final String serviceId;
+  final String serviceNameId;
 
-  const AddOrderBottomSheet(
-      {super.key, required this.totalPrice, required this.serviceId});
+  const AddOrderBottomSheet({super.key, required this.serviceNameId});
 
   static Future<T?> show<T>({
     required BuildContext context,
-    required num totalPrice,
-    required String serviceId,
+    required String serviceNameId,
   }) {
     return showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
       builder: (context) {
         return AddOrderBottomSheet(
-          totalPrice: totalPrice,
-          serviceId: serviceId,
+          serviceNameId: serviceNameId,
         );
       },
     );
@@ -112,8 +106,7 @@ class AddOrderBottomSheet extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AddOrderBottomSheetProvider(
         context: context,
-        totalPrice: totalPrice,
-        serviceId: serviceId,
+        serviceId: serviceNameId,
       ),
       child: Consumer<AddOrderBottomSheetProvider>(
         builder: (context, provider, child) {

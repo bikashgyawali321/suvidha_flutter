@@ -75,7 +75,7 @@ class ForgotPasswordProvider extends ChangeNotifier {
       loading = false;
       SnackBarHelper.showSnackbar(
         context: context,
-        errorMessage: response.message,
+        errorMessage: response.errorMessage,
       );
 
       notifyListeners();

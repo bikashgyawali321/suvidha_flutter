@@ -33,7 +33,9 @@ class ChangePasswordProvider extends ChangeNotifier {
     if (response.statusCode == 200) {
       context.pop();
       SnackBarHelper.showSnackbar(
-          context: context, successMessage: response.message);
+        context: context,
+        successMessage: response.message,
+      );
 
       loading = false;
       notifyListeners();
