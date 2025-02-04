@@ -28,13 +28,11 @@ class ServiceProvider extends ChangeNotifier {
   List<DocsService> recommendedServices = [];
 
   //get serviceName id from service name
-  String getServiceId(String serviceName) {
-    for (final service in services) {
-      if (service.serviceName.name == serviceName) {
-        return service.serviceName.id;
-      }
-    }
-    return '';
+  String getServiceNameId(String? serviceName) {
+    final service = services.firstWhere(
+      (element) => element.serviceName.name == serviceName,
+    );
+    return service.serviceName.id;
   }
 
   // get all services provided to the users

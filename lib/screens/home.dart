@@ -233,9 +233,7 @@ class _HomeScreenState extends State<HomeScreen>
             children: [
               BookingsScreen(),
               Dashboard(controller: _mainContentScroller),
-              Orders(
-                controller: _mainContentScroller,
-              ),
+              Orders(),
             ],
           ),
           Align(

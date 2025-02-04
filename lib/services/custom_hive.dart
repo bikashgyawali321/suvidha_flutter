@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:suvidha/models/auth_models/auth_token.dart';
+import 'package:suvidha/models/notification_model.dart';
 
 class CustomHive {
   CustomHive._internal();
@@ -43,14 +44,14 @@ class CustomHive {
   //get theme mode
   Future<ThemeMode> getThemeMode() async {
     final themeIndex =
-        await _box.get('theme_mode', defaultValue: ThemeMode.light.index);
+        await _box.get('theme_mode', defaultValue: ThemeMode.dark.index);
 
     return ThemeMode.values[themeIndex];
   }
 
   //save fcm token
 
-    Future<void> saveFCMToken(String token) {
+  Future<void> saveFCMToken(String token) {
     return _box.put('fcmToken', token);
   }
 
@@ -58,5 +59,71 @@ class CustomHive {
   String? getFCMToken() {
     String? encodedToken = _box.get('fcmToken');
     return encodedToken;
+  }
+
+//add notifications
+  Future<void> saveNotifications(NotificationModel notification) async {
+    List<dynamic> encodedNotifications =
+        _box.get('notifications', defaultValue: []);
+
+    List<NotificationModel> notifications = encodedNotifications
+        .map((encoded) => NotificationModel.fromJson(jsonDecode(encoded)))
+        .toList();
+
+    notifications.add(notification);
+    List<String> updatedNotifications =
+        notifications.map((notif) => jsonEncode(notif.toJson())).toList();
+
+    await _box.put('notifications', updatedNotifications);
+  }
+
+  List<NotificationModel> getNotifications() {
+    List<dynamic> encodedNotifications =
+        _box.get('notifications', defaultValue: []);
+
+    List<NotificationModel> notifications = encodedNotifications
+        .map((encoded) => NotificationModel.fromJson(jsonDecode(encoded)))
+        .where((notif) => !notif.isRead)
+        .toList();
+
+    DateTime now = DateTime.now();
+
+    notifications.removeWhere((notif) {
+      if (now.difference(notif.date).inDays > 30) {
+        _box.delete('notifications');
+        return true;
+      }
+      return false;
+    });
+
+    _box.put('notifications',
+        notifications.map((notif) => jsonEncode(notif.toJson())).toList());
+
+    return notifications;
+  }
+
+  Future<void> deleteAllNotifications() async {
+    await _box.delete('notifications');
+  }
+
+  Future<void> markNotificationAsRead(String orderId) async {
+    List<String> encodedNotifications =
+        _box.get('notifications', defaultValue: []);
+
+    List<NotificationModel> notifications = encodedNotifications
+        .map((encoded) => NotificationModel.fromJson(jsonDecode(encoded)))
+        .toList();
+
+    for (var notif in notifications) {
+      if (notif.orderId == orderId) {
+        notif.isRead = true;
+        break;
+      }
+    }
+
+    List<String> updatedNotifications =
+        notifications.map((notif) => jsonEncode(notif.toJson())).toList();
+
+    await _box.put('notifications', updatedNotifications);
   }
 }

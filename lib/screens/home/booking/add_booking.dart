@@ -61,7 +61,6 @@ class AddBookingProvider extends ChangeNotifier {
       options: BoardDateTimeOptions(
         activeColor: Theme.of(context).colorScheme.primary,
         pickerFormat: 'y M d | hh:mm aa',
-        foregroundColor: Colors.transparent,
         useAmpm: true,
         showDateButton: true,
         boardTitle: 'Choose a date to book the service',
@@ -114,9 +113,11 @@ class AddBookingProvider extends ChangeNotifier {
             'An error occurred while creating booking,please try again later',
       );
     } finally {
-      context.pop();
+      await bookingsProvider.fetchBookings(reset: true);
       loading = false;
-      bookingsProvider.fetchBookings();
+
+      context.pop();
+
       notifyListeners();
     }
   }
@@ -247,15 +248,6 @@ class AddBookingBottomSheet extends StatelessWidget {
                             contentPadding: EdgeInsets.symmetric(
                               vertical: 15,
                               horizontal: 20,
-                            ),
-                            prefix: Text(
-                              'Rs. ',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
                             ),
                             labelText: 'Total Price (fixed)',
                             hintText: 'Total price for the service',

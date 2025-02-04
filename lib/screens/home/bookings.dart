@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/models/bookings/booking_model.dart';
 import 'package:suvidha/models/listing_model.dart';
+import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/screens/home/services/choose_service_bottom_sheet.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/widgets/custom_button.dart';
@@ -18,13 +19,16 @@ class BookingsProvider extends ChangeNotifier {
   final BuildContext context;
   late BackendService _backendService;
 
-  ListingModel listingModel = ListingModel(page: 1, limit: 13);
+  ListingModel listingModel = ListingModel(
+    page: 1,
+    limit: 50,
+  );
 
   BookingsProvider(this.context) {
     initialize();
   }
 
-  void initialize() {
+  void initialize() async {
     _backendService = Provider.of<BackendService>(context, listen: false);
     fetchBookings();
   }
@@ -124,147 +128,161 @@ class BookingsScreen extends StatelessWidget {
       builder: (context, child) => Consumer<BookingsProvider>(
         builder: (context, provider, child) {
           return SafeArea(
-            child: Stack(
-              children: [
-                if (provider.loading)
-                  const Center(child: LoadingScreen())
-                else if (provider.filteredBookings.isEmpty)
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Center(
-                        child: Icon(
-                          Icons.error_outline,
-                          size: 60,
+            child: RefreshIndicator(
+              onRefresh: () => provider.fetchBookings(
+                reset: true,
+              ),
+              child: Stack(
+                children: [
+                  if (provider.loading)
+                    const Center(child: LoadingScreen())
+                  else if (provider.filteredBookings.isEmpty)
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Center(
+                          child: Icon(
+                            Icons.error_outline,
+                            size: 60,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 10),
-                      Text(
-                        'No bookings found!',
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                        SizedBox(height: 10),
+                        Text(
+                          'No bookings found!',
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                        ),
+                        Text(
+                          'Looks like there are no bookings available.',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                        SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 15,
+                          ),
+                          child: CustomButton(
+                            label: 'Create New Booking',
+                            onPressed: () {
+                              ServiceListBottomSheet.show(context);
+                            },
+                          ),
+                        ),
+                      ],
+                    )
+                  else
+                    NotificationListener<ScrollNotification>(
+                      onNotification: (scrollInfo) {
+                        if (scrollInfo.metrics.pixels ==
+                                scrollInfo.metrics.maxScrollExtent &&
+                            provider.hasMore) {
+                          provider.fetchMoreBookings();
+                        }
+                        return false;
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 35),
+                        child: ListView.builder(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 0,
+                            vertical: 20,
+                          ),
+                          itemCount: provider.filteredBookings.length +
+                              (provider.hasMore ? 1 : 0) +
+                              1,
+                          itemBuilder: (context, index) {
+                            if (index == provider.filteredBookings.length) {
+                              return Column(
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 15, vertical: 5),
+                                    child: CustomButton(
+                                      label: 'Create New Booking',
+                                      onPressed: () {
+                                        ServiceListBottomSheet.show(context);
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 70,
+                                  ),
+                                ],
+                              );
+                            } else if (index ==
+                                provider.filteredBookings.length + 1) {
+                              return const SizedBox(
+                                height: 100,
+                              );
+                            }
+                            final booking = provider.filteredBookings[index];
+                            return Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(0),
+                              ),
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  radius: 25,
+                                  backgroundColor:
+                                      booking.serviceName.name.toColor,
+                                  child: Text(
+                                    booking.serviceName.name[0].toUpperCase(),
+                                  ),
                                 ),
-                      ),
-                      Text(
-                        'Looks like there are no bookings available.',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                      ),
-                      SizedBox(height: 10),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                        child: CustomButton(
-                          label: 'Create New Booking',
-                          onPressed: () {
-                            ServiceListBottomSheet.show(context);
+                                title: Text(
+                                  booking.serviceName.name.toUpperCase(),
+                                  style: Theme.of(context).textTheme.labelLarge,
+                                ),
+                                subtitle:
+                                    Text('Status: ${booking.bookingStatus}'),
+                                trailing: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text('View Details'),
+                                    Icon(Icons.chevron_right)
+                                  ],
+                                ),
+                                onTap: () => context.push(
+                                  '/booking/details',
+                                  extra: booking,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       ),
-                    ],
-                  )
-                else
-                  NotificationListener<ScrollNotification>(
-                    onNotification: (scrollInfo) {
-                      if (scrollInfo.metrics.pixels ==
-                              scrollInfo.metrics.maxScrollExtent &&
-                          provider.hasMore) {
-                        provider.fetchMoreBookings();
-                      }
-                      return false;
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 35),
-                      child: ListView.builder(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 0,
-                          vertical: 20,
-                        ),
-                        itemCount: provider.filteredBookings.length +
-                            (provider.hasMore ? 1 : 0) +
-                            1,
-                        itemBuilder: (context, index) {
-                          if (index == provider.filteredBookings.length) {
-                            return Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 5),
-                                  child: CustomButton(
-                                    label: 'Create New Booking',
-                                    onPressed: () {
-                                      ServiceListBottomSheet.show(context);
-                                    },
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 70,
-                                ),
-                              ],
-                            );
-                          } else if (index ==
-                              provider.filteredBookings.length + 1) {
-                            return const SizedBox(
-                              height: 100,
-                            );
-                          }
-                          final booking = provider.filteredBookings[index];
-                          return Card(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(0),
-                            ),
-                            child: ListTile(
-                              title: Text(
-                                booking.serviceName.name.toUpperCase(),
-                                style: Theme.of(context).textTheme.labelLarge,
-                              ),
-                              subtitle:
-                                  Text('Status: ${booking.bookingStatus}'),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text('View Details'),
-                                  Icon(Icons.chevron_right)
-                                ],
-                              ),
-                              onTap: () => context.push(
-                                '/booking/details',
-                                extra: booking,
-                              ),
-                            ),
-                          );
-                        },
+                    ),
+                  Positioned(
+                    top: -2,
+                    left: 00,
+                    right: 0,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(0),
                       ),
-                    ),
-                  ),
-                Positioned(
-                  top: -2,
-                  left: 00,
-                  right: 0,
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(0),
-                    ),
-                    color: Theme.of(context).appBarTheme.foregroundColor,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: TextField(
-                        onChanged: (value) => provider.updateSearchTerm(value),
-                        decoration: const InputDecoration(
-                          hintText: 'Search bookings...',
-                          prefixIcon: Icon(
-                            Icons.search,
-                            size: 30,
+                      color: Theme.of(context).appBarTheme.foregroundColor,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: TextField(
+                          onChanged: (value) =>
+                              provider.updateSearchTerm(value),
+                          decoration: const InputDecoration(
+                            hintText: 'Search bookings...',
+                            prefixIcon: Icon(
+                              Icons.search,
+                              size: 30,
+                            ),
+                            contentPadding: EdgeInsets.all(10),
+                            border: InputBorder.none,
                           ),
-                          contentPadding: EdgeInsets.all(10),
-                          border: InputBorder.none,
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           );
         },

@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/models/order_models/order_model.dart';
 import 'package:suvidha/providers/location_provider.dart';
@@ -15,8 +18,7 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
   final String serviceId;
 
   AddOrderBottomSheetProvider(
-      {required this.context,
-      required this.serviceId}) {
+      {required this.context, required this.serviceId}) {
     debugPrint(serviceId);
     initialize();
   }
@@ -50,19 +52,15 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
   Future<void> placeOrder() async {
     if (!_formKey.currentState!.validate()) return;
     loading = true;
+
     notifyListeners();
 
     try {
       final response = await _backendService.createOrder(newOrder: newOrder!);
 
       if (response.statusCode == 200) {
-        context.go('/home');
-        SnackBarHelper.showSnackbar(
-            context: context,
-            successMessage:
-                'Order placed successfully, wait for the service provider to accept');
+        await LoadingBottomSheet.show(context);
       } else {
-        context.pop();
         SnackBarHelper.showSnackbar(
           context: context,
           errorMessage: response.errorMessage,
@@ -75,6 +73,7 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
         errorMessage: 'Error while placing order',
       );
     } finally {
+      context.pop();
       loading = false;
       notifyListeners();
     }
@@ -164,7 +163,7 @@ class AddOrderBottomSheet extends StatelessWidget {
                             Expanded(
                               child: CustomButton(
                                 label: 'Not Now',
-                                onPressed: () => context.go('/home'),
+                                onPressed: () => context.pop(),
                                 backgroundColor:
                                     Theme.of(context).colorScheme.primary,
                               ),
@@ -192,6 +191,95 @@ class AddOrderBottomSheet extends StatelessWidget {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class LoadingBottomSheet extends StatelessWidget {
+  const LoadingBottomSheet({super.key});
+
+  static Future<T?> show<T>(BuildContext context) {
+    final overlayContext = context;
+
+    Future.delayed(
+        const Duration(
+          minutes: 2,
+          seconds: 50,
+        ), () {
+      if (overlayContext.mounted) {
+        overlayContext.pop();
+      }
+    });
+
+    return showModalBottomSheet<T>(
+      context: context,
+      builder: (context) => const LoadingBottomSheet(),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: MediaQuery.of(context).size.height * 0.43,
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      child: Stack(
+        children: [
+          Positioned(
+            bottom: MediaQuery.of(context).size.height * 0.355,
+            left: MediaQuery.of(context).size.width * 0.832,
+            child: IconButton(
+              icon: const Icon(
+                Icons.close,
+                size: 30,
+              ),
+              onPressed: () {
+                context.pop();
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 10,
+                ),
+                Center(
+                  child: Text(
+                    'Placing your order',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Center(
+                  child: SizedBox(
+                    height: 200,
+                    child: LoadingIndicator(
+                      colors: [
+                        Colors.blue,
+                        Colors.yellow,
+                        Colors.green,
+                        Colors.deepPurple,
+                      ],
+                      indicatorType: Indicator.orbit,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Waiting for nearby service providers to accept your request.',
+                  style: Theme.of(context).textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

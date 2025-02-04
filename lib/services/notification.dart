@@ -2,6 +2,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:suvidha/main.dart';
+import 'package:suvidha/models/notification_model.dart';
 import 'package:suvidha/services/backend_service.dart';
 import 'package:suvidha/services/custom_hive.dart';
 import 'package:suvidha/widgets/custom_button.dart';
@@ -48,7 +49,7 @@ class NotificationService extends ChangeNotifier {
       announcement: true,
       badge: true,
       carPlay: false,
-      criticalAlert: false,
+      criticalAlert: true,
       provisional: true,
       sound: true,
     );
@@ -61,46 +62,54 @@ class NotificationService extends ChangeNotifier {
 
   Future<void> sendFCMToken() async {
     final isSupported = await _messaging.isSupported();
-    print('isSupported: $isSupported');
-
     if (!isSupported) return;
     if (!isNotificationEnabled) return;
 
     final token = await _messaging.getToken();
-    debugPrint('FCM Token: $token');
     if (token == null) return;
 
     if (_customHive.getFCMToken() == token) return;
 
     final resp = await backendService.addFcmToken(fcmToken: token);
     if (resp.statusCode == 200) {
-      debugPrint('FCM Token sent');
       await _customHive.saveFCMToken(token);
     }
   }
 
-  void _handleForegroundNotifications(RemoteMessage message) {
-    //Just display the notification to the user
+  void _handleForegroundNotifications(RemoteMessage message) async {
     if (message.data.isNotEmpty) {
-      debugPrint('Handling foreground notification, data: ${message.data}');
+      await _customHive.saveNotifications(
+        NotificationModel(
+          orderId: message.data['orderId'],
+          data:
+              message.notification?.body ?? 'You have an update on your order',
+          date: DateTime.now(),
+          title: message.notification?.title ?? 'Order Update',
+          isRead: true,
+        ),
+      );
       _handleShowNotificationDialog(message);
     }
   }
 
   void _handleBackgroundNotifications(RemoteMessage message) {
-    debugPrint('Handling background notification, data: ${message.data}');
-    //Handle the notification data
+    final notification = NotificationModel(
+      orderId: message.data['orderId'],
+      data: message.notification?.body ?? 'You have an update on your order',
+      date: DateTime.now(),
+      title: message.notification?.title ?? 'Order Update',
+      isRead: false,
+    );
+    _customHive.saveNotifications(notification);
     _handleNotifications(message);
   }
 
   void _handleNotifications(RemoteMessage message) {
     final String? orderId = message.data['orderId'];
 
-    if (orderId != null) {
-      //TODO:fetch order from order id  and navigate to order details page
+    if (orderId != null && navigatorKey.currentContext != null) {
       GoRouter.of(navigatorKey.currentContext!).go(
-        '/order_detail',
-        extra: orderId,
+        '/order/$orderId',
       );
     }
   }
@@ -120,21 +129,26 @@ class NotificationService extends ChangeNotifier {
                     title: message.notification?.title ?? 'Notification',
                   ),
                   SizedBox(
-                    height: 10,
+                    height: 20,
                   ),
                   Text(
                     message.notification?.body ?? 'Update on your order status',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  CustomButton(
-                    label: 'Ok',
-                    onPressed: () => navigatorKey.currentState!.pop(),
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                   SizedBox(
                     height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: CustomButton(
+                      label: 'Ok',
+                      onPressed: () => navigatorKey.currentState!.pop(),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                 ],
               ),

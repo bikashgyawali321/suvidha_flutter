@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
+import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/widgets/loading_screen.dart';
 
 import 'orders/add_order_bottom_sheet.dart';
@@ -70,7 +70,7 @@ class Dashboard extends StatelessWidget {
                               crossAxisCount: 2,
                               crossAxisSpacing: 2,
                               mainAxisSpacing: 2,
-                              childAspectRatio: 1.7,
+                              childAspectRatio: 1.5,
                             ),
                             itemBuilder: (context, index) {
                               final serviceName =
@@ -81,7 +81,7 @@ class Dashboard extends StatelessWidget {
                                   await AddOrderBottomSheet.show(
                                     context: context,
                                     serviceNameId: _serviceProvider
-                                        .getServiceId(serviceName),
+                                        .getServiceNameId(serviceName),
                                   );
                                   _serviceProvider.initialize();
                                 },
@@ -93,36 +93,51 @@ class Dashboard extends StatelessWidget {
                                   //   serviceName.toColor,
                                   //   0.7,
                                   // ),
-                                  child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: Text(
-                                            serviceName.toUpperCase(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .labelLarge,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 10,
+                                    ),
+                                    child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 25,
+                                            backgroundColor:
+                                                serviceName.toColor,
+                                            child: Text(
+                                              serviceName[0].toUpperCase(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 3,
-                                        ),
-                                        if (isRecommended)
+                                          SizedBox(
+                                            height: 2,
+                                          ),
                                           Text(
-                                            'Recommended',
+                                            serviceName,
                                             style: Theme.of(context)
                                                 .textTheme
-                                                .labelSmall
-                                                ?.copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .primaryContainer,
-                                                ),
+                                                .titleMedium,
                                           ),
-                                      ]),
+                                          
+                                          Spacer(),
+                                          if (isRecommended)
+                                            Text(
+                                              'Recommended',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .labelSmall
+                                                  ?.copyWith(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .primaryContainer,
+                                                  ),
+                                            ),
+                                        ]),
+                                  ),
                                 ),
                               );
                             },

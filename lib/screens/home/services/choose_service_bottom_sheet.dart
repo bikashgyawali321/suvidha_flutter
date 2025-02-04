@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/extensions.dart';
 import 'package:suvidha/providers/service_provider.dart';
+import 'package:suvidha/providers/theme_provider.dart';
 import 'package:suvidha/screens/home/booking/add_booking.dart';
 import 'package:suvidha/screens/home/orders/add_order_bottom_sheet.dart';
 import 'package:suvidha/widgets/form_bottom_sheet_header.dart';
@@ -83,18 +84,37 @@ class ServiceListBottomSheet extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(0),
                                 ),
                                 child: ListTile(
-                                  title: Text(
-                                    serviceName.toUpperCase(),
+                                  minLeadingWidth: 0,
+                                  leading: CircleAvatar(
+                                    radius: 22,
+                                    backgroundColor: serviceName.toColor,
+                                    child: Text(
+                                      serviceName[0].toUpperCase(),
+                                    ),
                                   ),
-                                  trailing: isRecommendedService
+                                  title: Text(
+                                    serviceName,
+                                  ),
+                                  trailing: Text(
+                                    isForOrder == true
+                                        ? 'Order now'
+                                        : 'Book now',
+                                  ),
+                                  subtitle: isRecommendedService
                                       ? Text('Recommended')
                                       : null,
                                   onTap: () {
                                     context.pop();
-                                    ShowBookingOrganizationsBottomSheet.show(
-                                      context,
-                                      serviceName,
-                                    );
+                                    isForOrder == true
+                                        ? AddOrderBottomSheet(
+                                            serviceNameId: serviceProvider
+                                                .getServiceNameId(serviceName),
+                                          )
+                                        : ShowBookingOrganizationsBottomSheet
+                                            .show(
+                                            context,
+                                            serviceName,
+                                          );
                                   },
                                 ),
                               ),
@@ -102,7 +122,7 @@ class ServiceListBottomSheet extends StatelessWidget {
                             .toList(),
                       ),
             SizedBox(
-              height: 5,
+              height: 15,
             )
           ],
         ),

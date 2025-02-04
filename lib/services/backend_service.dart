@@ -308,6 +308,17 @@ class BackendService extends ChangeNotifier {
     );
   }
 
+  //fetch all orders
+  Future<BackendResponse> fetchAllOrders(
+      {required ListingModel listModel}) async {
+    return await handleRequest(
+        request: _dio.get(
+          '/order/',
+          queryParameters: listModel.toJson(),
+        ),
+        titleOfRequest: "Fetching all orders");
+  }
+
   //fetch orders by id
   Future<BackendResponse> getOrderById({required String orderId}) async {
     return await handleRequest(
