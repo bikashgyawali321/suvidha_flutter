@@ -7,7 +7,6 @@ import 'package:suvidha/providers/theme_provider.dart';
 
 import '../models/auth_models/auth_token.dart';
 import '../services/custom_hive.dart';
-import '../services/notification.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -80,7 +79,6 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                   setState(() {
                     loading = true;
                   });
-                  await context.read<NotificationService>().initilize();
                   await Future.delayed(const Duration(seconds: 1));
                   _handleRouting();
                 },

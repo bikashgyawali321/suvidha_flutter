@@ -307,18 +307,24 @@ class Profile extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          ListTile(
-                            title: const Text('Orders History'),
-                            leading: const Icon(Icons.history),
-                            trailing: customTrallingIcon(),
-                            onTap: () {},
-                          ),
                           customDivider(),
                           ListTile(
                             title: const Text('Ongoing Orders'),
-                            leading: const Icon(Icons.delivery_dining),
+                            leading: const Icon(
+                              Icons.timer_outlined,
+                            ),
                             trailing: customTrallingIcon(),
-                            onTap: () {},
+                            onTap: () {
+                              context.push('/active_orders');
+                            },
+                          ),
+                          ListTile(
+                            title: const Text('Upcoming Bookings'),
+                            leading: const Icon(Icons.event_available),
+                            trailing: customTrallingIcon(),
+                            onTap: () {
+                              context.push('/active-bookings');
+                            },
                           ),
                         ],
                       ),

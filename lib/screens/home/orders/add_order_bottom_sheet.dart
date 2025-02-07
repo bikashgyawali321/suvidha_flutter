@@ -31,12 +31,12 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
     _locationProvider = Provider.of<LocationProvider>(context, listen: false);
 
     newOrder = NewOrderModel(
-      serviceId: serviceId,
+      serviceNameId: serviceId,
       longitudeLatitude: LongitudeLatitudeModel(
         type: 'Point',
         coordinates: [
-          _locationProvider.currentPosition?.latitude ?? 0.0,
           _locationProvider.currentPosition?.longitude ?? 0.0,
+          _locationProvider.currentPosition?.latitude ?? 0.0,
         ],
       ),
       location: _locationProvider.currentAddress ?? '',
@@ -205,7 +205,7 @@ class LoadingBottomSheet extends StatelessWidget {
     Future.delayed(
         const Duration(
           minutes: 2,
-          seconds: 50,
+          seconds: 55,
         ), () {
       if (overlayContext.mounted) {
         overlayContext.pop();
@@ -264,7 +264,6 @@ class LoadingBottomSheet extends StatelessWidget {
                         Colors.blue,
                         Colors.yellow,
                         Colors.green,
-                        Colors.deepPurple,
                       ],
                       indicatorType: Indicator.orbit,
                     ),

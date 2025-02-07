@@ -41,9 +41,13 @@ class DocsOrganization {
   )
   final String organizationName;
 
+  @JsonKey(name: "rating")
+  final double rating;
+
   DocsOrganization({
     required this.id,
     required this.organizationName,
+    required this.rating,
   });
 
   factory DocsOrganization.fromJson(Map<String, dynamic> json) =>
@@ -74,7 +78,7 @@ class DocsServiceName {
 class DocsService {
   @JsonKey(name: 'org', fromJson: DocsOrganization.fromJson)
   final DocsOrganization org;
-  @JsonKey(name: 'service', fromJson: DocsServiceName.fromJson)
+  @JsonKey(name: 'serviceName', fromJson: DocsServiceName.fromJson)
   final DocsServiceName serviceName;
   @JsonKey(name: '_id')
   final String id;

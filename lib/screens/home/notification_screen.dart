@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:suvidha/extensions.dart';
 import 'package:suvidha/models/notification_model.dart';
 import 'package:suvidha/services/custom_hive.dart';
+import 'package:suvidha/widgets/custom_button.dart';
 import 'package:suvidha/widgets/loading_screen.dart';
 
 class NotificationScreenProvider extends ChangeNotifier {
@@ -21,22 +22,14 @@ class NotificationScreenProvider extends ChangeNotifier {
     notifyListeners();
     final response = await _customHive.getNotifications();
     notifications = response;
+    notifications.sort((a, b) => a.isRead ? 1 : -1);
+    loading = false;
     notifyListeners();
   }
 
   Future<void> markNotificationAsRead(String orderId) async {
     await _customHive.markNotificationAsRead(orderId);
     notifyListeners();
-  }
-
-  List<NotificationModel> get getFilteredNotifications {
-    if (notifications.isNotEmpty) {
-      return notifications
-          .where((notification) => notification.date
-              .isAfter(DateTime.now().subtract(Duration(days: 30))))
-          .toList();
-    }
-    return [];
   }
 
   void deleteAllNotifications() {
@@ -116,14 +109,17 @@ class NotificationScreen extends StatelessWidget {
                           padding: EdgeInsets.all(8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              radius: 20,
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainer,
+                              radius: 25,
+                              backgroundColor: Theme.of(context).highlightColor,
                               child: Icon(
                                 notification.isRead == true
                                     ? Icons.notifications
                                     : Icons.notifications_active,
+                                size: 30,
+                                color: Theme.of(context).brightness ==
+                                        Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black,
                               ),
                             ),
                             title: Text(
@@ -139,7 +135,7 @@ class NotificationScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            subtitle: Text(notification.date.toVerbalDateTime),
+                            subtitle: Text(notification.date.toMarkerDate),
                             onTap: () async {
                               await provider
                                   .markNotificationAsRead(notification.orderId);
@@ -151,7 +147,23 @@ class NotificationScreen extends StatelessWidget {
                       SizedBox(
                         height: 3,
                       ),
-                    ]
+                    ],
+                    SizedBox(
+                      height: 30,
+                    ),
+                    if (provider.notifications.isNotEmpty) ...[
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 15),
+                        child: CustomButton(
+                          onPressed: () async {
+                            provider.deleteAllNotifications();
+                            await provider.getAllNotifications();
+                          },
+                          label: 'Delete All Notifications',
+                          backgroundColor: Colors.blue,
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),

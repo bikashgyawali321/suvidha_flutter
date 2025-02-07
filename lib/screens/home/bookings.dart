@@ -198,7 +198,7 @@ class BookingsScreen extends StatelessWidget {
                                 children: [
                                   Padding(
                                     padding: EdgeInsets.symmetric(
-                                        horizontal: 15, vertical: 5),
+                                        horizontal: 15, vertical: 20),
                                     child: CustomButton(
                                       label: 'Create New Booking',
                                       onPressed: () {
@@ -229,6 +229,12 @@ class BookingsScreen extends StatelessWidget {
                                       booking.serviceName.name.toColor,
                                   child: Text(
                                     booking.serviceName.name[0].toUpperCase(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleLarge
+                                        ?.copyWith(
+                                          color: Colors.white,
+                                        ),
                                   ),
                                 ),
                                 title: Text(

@@ -11,28 +11,38 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 class ReviewAndRatingProvider extends ChangeNotifier {
   final BuildContext context;
   late BackendService _backendService;
-  ReviewAndRatingProvider({required this.context, required this.serviceId}) {
+  final bool isForBooking;
+  ReviewAndRatingProvider(
+      {required this.context, required this.id, required this.isForBooking}) {
     initialize();
   }
   late final ratingController;
   bool loading = false;
-  final String serviceId;
+  final String id;
 
   NewReviewRatingModel? newReviewRatingModel;
+  String? ratingError;
 
   void initialize() {
     _backendService = Provider.of<BackendService>(
       context,
+      listen: false,
     );
     ratingController = TextEditingController();
     newReviewRatingModel = NewReviewRatingModel(
-      serviceId: serviceId,
+      bookingId: isForBooking == true ? id : null,
+      orderId: isForBooking == false ? id : null,
       rating: 0,
       review: '',
     );
   }
 
   Future<void> addReviewRating() async {
+    if (newReviewRatingModel?.rating == 0) {
+      ratingError = "Please rate the service";
+      notifyListeners();
+      return;
+    }
     loading = true;
     notifyListeners();
     final response = await _backendService.createReviewRatings(
@@ -56,15 +66,31 @@ class ReviewAndRatingProvider extends ChangeNotifier {
 }
 
 class ReviewAndRatingBottomSheet extends StatelessWidget {
-  const ReviewAndRatingBottomSheet({super.key, required this.serviceId});
-  final String serviceId;
-
-  static void show({required BuildContext context, required String serviceId}) {
+  const ReviewAndRatingBottomSheet({
+    super.key,
+    required this.id,
+    required this.isForBooking,
+  });
+  final String id;
+  final bool isForBooking;
+  static void show({
+    required BuildContext context,
+    required String id,
+    required bool isForBooking,
+  }) {
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) => ChangeNotifierProvider(
-        create: (context) =>
-            ReviewAndRatingProvider(context: context, serviceId: serviceId),
+        create: (context) => ReviewAndRatingProvider(
+          context: context,
+          id: id,
+          isForBooking: isForBooking,
+        ),
+        builder: (context, child) => ReviewAndRatingBottomSheet(
+          id: id,
+          isForBooking: isForBooking,
+        ),
       ),
     );
   }
@@ -88,8 +114,13 @@ class ReviewAndRatingBottomSheet extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: Column(
                   children: [
-                    Text('Rate the service'),
-                    SizedBox(height: 5),
+                    Text(
+                      'How was your experience? Rate and let us know!',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                    ),
+                    SizedBox(height: 10),
                     RatingBar.builder(
                       maxRating: 5,
                       initialRating: 0,
@@ -97,30 +128,42 @@ class ReviewAndRatingBottomSheet extends StatelessWidget {
                       direction: Axis.horizontal,
                       allowHalfRating: true,
                       itemCount: 5,
-                      itemSize: 30,
+                      itemSize: 50,
                       itemPadding: EdgeInsets.symmetric(horizontal: 4.0),
                       itemBuilder: (context, _) => Icon(
                         Icons.star,
                         color: Colors.amber,
                       ),
+                      glow: false,
                       onRatingUpdate: (rating) {
                         provider.newReviewRatingModel!.rating = rating;
                       },
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (provider.ratingError != null)
+                          Text(
+                            provider.ratingError!,
+                            style: TextStyle(color: Colors.red),
+                          ),
+                      ],
+                    ),
                     SizedBox(
-                      height: 10,
+                      height: 15,
                     ),
                     TextFormField(
                       decoration: InputDecoration(
-                        labelText: 'Share your experience(optional)',
-                        hintText: 'Write your review here',
+                        hintText: 'Write your review here.....',
                       ),
+                      maxLines: 2,
+                      maxLength: 100,
                       onChanged: (value) {
                         provider.newReviewRatingModel?.review = value;
                       },
                     ),
                     SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -130,15 +173,18 @@ class ReviewAndRatingBottomSheet extends StatelessWidget {
                           child: CustomButton(
                             label: 'Skip',
                             onPressed: () => context.pop(),
+                            backgroundColor: Colors.blue,
                           ),
                         ),
                         SizedBox(
                           width: 10,
                         ),
-                        CustomButton(
-                          label: 'Submit',
-                          onPressed: () => provider.addReviewRating(),
-                          loading: provider.loading,
+                        Expanded(
+                          child: CustomButton(
+                            label: 'Submit',
+                            onPressed: () => provider.addReviewRating(),
+                            loading: provider.loading,
+                          ),
                         ),
                       ],
                     ),

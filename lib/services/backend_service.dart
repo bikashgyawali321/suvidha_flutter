@@ -330,6 +330,7 @@ class BackendService extends ChangeNotifier {
   //post an review
   Future<BackendResponse> createReviewRatings(
       {required NewReviewRatingModel newReviewRatingModel}) async {
+    debugPrint('newReviewRatingModel: ${newReviewRatingModel.toJson()}');
     return await handleRequest(
       request: _dio.post(
         '/review/',

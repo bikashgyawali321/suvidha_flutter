@@ -27,6 +27,7 @@ class LogoutProvider extends ChangeNotifier {
       await authService.removeFcmToken(fcmToken: fcmToken!);
     }
     await _customHive.deleteToken();
+    await _customHive.deleteFCMToken();
 
     context.go('/');
     notifyListeners();

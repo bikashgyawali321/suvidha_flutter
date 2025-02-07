@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/extensions.dart';
@@ -106,7 +107,8 @@ class ServiceListBottomSheet extends StatelessWidget {
                                   onTap: () {
                                     context.pop();
                                     isForOrder == true
-                                        ? AddOrderBottomSheet(
+                                        ? AddOrderBottomSheet.show(
+                                            context: context,
                                             serviceNameId: serviceProvider
                                                 .getServiceNameId(serviceName),
                                           )
@@ -182,7 +184,26 @@ class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
                   title: Text(
                     service.org.organizationName,
                   ),
-                  subtitle: Text('Service Price: ${service.price.toCurrency}'),
+                  subtitle: Text('Price: ${service.price.toCurrency}'),
+                  trailing: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 4,
+                    children: [
+                      Text(
+                        'Rated: ${service.org.rating}/5',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      RatingBarIndicator(
+                          itemBuilder: (context, _) {
+                            return Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                            );
+                          },
+                          itemSize: 20,
+                          rating: service.org.rating.toDouble()),
+                    ],
+                  ),
                   onTap: () {
                     context.pop();
                     isForOrder == true
@@ -200,7 +221,7 @@ class ShowBookingOrganizationsBottomSheet extends StatelessWidget {
               )
             ],
             SizedBox(
-              height: 5,
+              height: 15,
             )
           ],
         ),

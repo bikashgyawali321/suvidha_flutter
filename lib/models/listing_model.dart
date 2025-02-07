@@ -6,8 +6,9 @@ part 'listing_model.g.dart';
 class ListingModel {
   int? page;
   int? limit;
+  String? status;
 
-  ListingModel({this.page, this.limit});
+  ListingModel({this.page, this.limit, this.status});
 
   factory ListingModel.fromJson(Map<String, dynamic> json) =>
       _$ListingModelFromJson(json);

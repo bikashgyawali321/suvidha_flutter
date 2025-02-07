@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -7,8 +8,10 @@ import 'package:suvidha/models/bookings/booking_model.dart';
 import 'package:suvidha/providers/location_provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/screens/home.dart';
+import 'package:suvidha/screens/home/booking/active_bookings.dart';
 import 'package:suvidha/screens/home/booking/booking_details.dart';
 import 'package:suvidha/screens/home/bookings.dart';
+import 'package:suvidha/screens/home/orders/active_orders.dart';
 import 'package:suvidha/screens/home/orders/order_details_screen.dart';
 import 'package:suvidha/screens/home/services/service_providers_screen.dart';
 import 'services/notification.dart';
@@ -31,12 +34,18 @@ void main() async {
   );
 
   await CustomHive().init();
-  runApp(ProviderWrappedApp());
+  final backendService = BackendService();
+  final notificationService = NotificationService(backendService);
+  notificationService.initialize();
+
+  runApp(ProviderWrappedApp(
+    notificationService: notificationService,
+  ));
 }
 
 class ProviderWrappedApp extends StatelessWidget {
-  const ProviderWrappedApp({super.key});
-
+  const ProviderWrappedApp({super.key, required this.notificationService});
+  final NotificationService notificationService;
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -45,7 +54,7 @@ class ProviderWrappedApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => BackendService()),
         ChangeNotifierProvider(create: (_) => AuthProvider(_)),
         ChangeNotifierProvider(
-          create: (_) => NotificationService(_.read<BackendService>()),
+          create: (_) => notificationService,
         ),
         ChangeNotifierProvider(create: (_) => ServiceProvider(_)),
         ChangeNotifierProvider(create: (_) => BookingsProvider(_)),
@@ -110,11 +119,50 @@ GoRouter _router = GoRouter(
         );
       },
     ),
+    GoRoute(
+      path: "/active_orders",
+      builder: (context, state) => ActiveOrdersScreen(),
+    ),
+    GoRoute(
+      path: '/active-bookings',
+      builder: (context, state) => ActiveBookingScreen(),
+    ),
   ],
 );
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Future<void> setupInteractedMessage() async {
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+
+    if (initialMessage != null) {
+      _handleMessage(initialMessage);
+
+      FirebaseMessaging.onMessageOpenedApp.listen(_handleMessage);
+    }
+  }
+
+  void _handleMessage(RemoteMessage message) {
+    String? orderId = message.data['orderId'];
+    if (orderId != null) {
+      context.push('/order/$orderId');
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    setupInteractedMessage();
+  }
 
   @override
   Widget build(BuildContext context) {

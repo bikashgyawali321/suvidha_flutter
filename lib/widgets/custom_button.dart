@@ -34,8 +34,7 @@ class CustomButton extends StatelessWidget {
               width: 20,
               child: LoadingIndicator(
                 indicatorType: Indicator.ballBeat,
-              )
-            )
+              ))
           : Text(
               label,
               style: const TextStyle(

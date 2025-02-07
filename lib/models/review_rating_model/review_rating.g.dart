@@ -9,7 +9,8 @@ part of 'review_rating.dart';
 NewReviewRatingModel _$NewReviewRatingModelFromJson(
         Map<String, dynamic> json) =>
     NewReviewRatingModel(
-      serviceId: json['service'] as String,
+      orderId: json['order'] as String?,
+      bookingId: json['booking'] as String?,
       rating: (json['rating'] as num).toDouble(),
       review: json['review'] as String?,
     );
@@ -17,7 +18,8 @@ NewReviewRatingModel _$NewReviewRatingModelFromJson(
 Map<String, dynamic> _$NewReviewRatingModelToJson(
         NewReviewRatingModel instance) =>
     <String, dynamic>{
-      'service': instance.serviceId,
+      if (instance.orderId case final value?) 'order': value,
+      if (instance.bookingId case final value?) 'booking': value,
       'rating': instance.rating,
       'review': instance.review,
     };

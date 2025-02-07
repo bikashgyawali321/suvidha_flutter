@@ -44,7 +44,7 @@ class CustomHive {
   //get theme mode
   Future<ThemeMode> getThemeMode() async {
     final themeIndex =
-        await _box.get('theme_mode', defaultValue: ThemeMode.dark.index);
+        await _box.get('theme_mode', defaultValue: ThemeMode.light.index);
 
     return ThemeMode.values[themeIndex];
   }
@@ -59,6 +59,11 @@ class CustomHive {
   String? getFCMToken() {
     String? encodedToken = _box.get('fcmToken');
     return encodedToken;
+  }
+
+  //delete fcm token
+  Future<void> deleteFCMToken() async {
+    return await _box.delete('fcmToken');
   }
 
 //add notifications
@@ -83,7 +88,6 @@ class CustomHive {
 
     List<NotificationModel> notifications = encodedNotifications
         .map((encoded) => NotificationModel.fromJson(jsonDecode(encoded)))
-        .where((notif) => !notif.isRead)
         .toList();
 
     DateTime now = DateTime.now();

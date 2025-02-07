@@ -232,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen>
             index: index,
             children: [
               BookingsScreen(),
-              Dashboard(controller: _mainContentScroller),
+              Dashboard(),
               Orders(),
             ],
           ),

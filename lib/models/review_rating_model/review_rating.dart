@@ -4,8 +4,18 @@ part 'review_rating.g.dart';
 
 @JsonSerializable()
 class NewReviewRatingModel {
-  @JsonKey(name: 'service')
-  String serviceId;
+  @JsonKey(
+    name: 'order',
+    includeIfNull: false,
+    
+  )
+  String? orderId;
+
+  @JsonKey(
+    name: "booking",
+    includeIfNull: false,
+  )
+  String? bookingId;
 
   @JsonKey(name: 'rating')
   double rating;
@@ -14,7 +24,8 @@ class NewReviewRatingModel {
   String? review;
 
   NewReviewRatingModel({
-    required this.serviceId,
+    this.orderId,
+    this.bookingId,
     required this.rating,
     this.review,
   });

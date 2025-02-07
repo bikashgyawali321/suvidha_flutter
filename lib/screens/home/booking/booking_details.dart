@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:suvidha/extensions.dart';
 import 'package:suvidha/models/bookings/booking_model.dart';
+import 'package:suvidha/widgets/custom_button.dart';
+
+import '../../review&rating.dart';
 
 class BookingDetails extends StatelessWidget {
   const BookingDetails({super.key, required this.booking});
@@ -161,6 +164,22 @@ class BookingDetails extends StatelessWidget {
                 ),
               ),
             ),
+            if (booking.bookingStatus == "Completed") ...[
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: CustomButton(
+                  label: 'Rate and Review',
+                  onPressed: ()=> ReviewAndRatingBottomSheet.show(
+                    context: context,
+                     id:booking.id,
+                     isForBooking: true,
+                ),
+              ),
+              ),
+            ]
           ],
         ),
       ),
