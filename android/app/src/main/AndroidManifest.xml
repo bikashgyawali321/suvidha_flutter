@@ -9,10 +9,10 @@
     <!-- Remove this if not needed -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove"/>
 
-    <!-- Location permissions -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/> <!-- Required for Android 13+ -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
     <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
@@ -43,29 +43,34 @@
         <service
             android:name="com.google.firebase.messaging.FirebaseMessagingService"
             android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE"
             tools:replace="android:exported">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
-        <!-- Meta-data for Firebase and Flutter -->
+        <!-- Firebase Metadata -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/ic_notification"/> <!-- Use this if you have a custom notification icon -->
+            android:resource="@drawable/ic_notification"/> <!-- Use custom notification icon -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/notification_color"/> <!-- Use your app's notification color -->
+            android:resource="@color/notification_color"/> <!-- Define a notification color -->
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="order_channel"/>
+            android:value="order_channel"/> <!-- Ensure you create this channel in Flutter -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
 
         <!-- Flutter Local Notifications Receivers -->
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"/>
+        <receiver
+            android:exported="false"
+            android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
@@ -73,6 +78,7 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
+
     </application>
 
 </manifest>

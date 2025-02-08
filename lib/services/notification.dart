@@ -46,14 +46,13 @@ class NotificationService extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Initialize Flutter Local Notification
   Future<void> setupFlutterNotifications() async {
     if (isFlutterLocalNotificatioInitialized) return;
 
     const channel = AndroidNotificationChannel(
-      'suvidha',
-      'Suvidha',
-      description: 'Suvidha Notification Channel',
+      'order_channel',
+      'Order Notification ',
+      description: 'Suvidha Order Notification Channel',
       importance: Importance.high,
     );
 
@@ -63,16 +62,15 @@ class NotificationService extends ChangeNotifier {
         ?.createNotificationChannel(channel);
 
     const initializationSettingAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
+        AndroidInitializationSettings('ic_notification');
 
     final initializationSettings = InitializationSettings(
       android: initializationSettingAndroid,
     );
+
     //flutter notification setup
     await localNotification.initialize(
       initializationSettings,
-      onDidReceiveBackgroundNotificationResponse:
-          onDidReceiveNotificationResponse,
     );
 
     isFlutterLocalNotificatioInitialized = true;
@@ -88,13 +86,13 @@ class NotificationService extends ChangeNotifier {
         notification.body,
         NotificationDetails(
           android: AndroidNotificationDetails(
-            'suvidha',
-            'Suvidha',
-            channelDescription: 'Suvidha Notification Channel',
+            'order_channel',
+            'Order Notification',
+            channelDescription: 'Suvidha Order Notification Channel',
             importance: Importance.high,
             priority: Priority.high,
             ticker: 'ticker',
-            icon: '@mipmap/ic_launcher',
+            icon: 'ic_notification',
           ),
         ),
         payload: message.data['orderId'],
