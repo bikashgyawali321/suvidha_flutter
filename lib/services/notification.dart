@@ -236,6 +236,11 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
+  void navigate() {
+    GoRouter.of(navigatorKey.currentContext!).push('/order/$orderId');
+    navigatorKey.currentState!.pop();
+  }
+
   void _handleShowNotificationBottomSheet(RemoteMessage message) {
     final orderId = message.data['orderId'];
     showModalBottomSheet(
@@ -274,10 +279,7 @@ class NotificationService extends ChangeNotifier {
                                 id: orderId!,
                                 isForBooking: false,
                               )
-                            : {
-                                GoRouter.of(context).push('/order/$orderId'),
-                                navigatorKey.currentState!.pop(),
-                              };
+                            : navigate();
                       },
                     ),
                   ),
