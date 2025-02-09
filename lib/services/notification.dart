@@ -274,7 +274,10 @@ class NotificationService extends ChangeNotifier {
                                 id: orderId!,
                                 isForBooking: false,
                               )
-                            : navigatorKey.currentState!.pop();
+                            : {
+                                GoRouter.of(context).push('/order/$orderId'),
+                                navigatorKey.currentState!.pop(),
+                              };
                       },
                     ),
                   ),

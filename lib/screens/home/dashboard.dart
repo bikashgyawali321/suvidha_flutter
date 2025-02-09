@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:suvidha/providers/service_provider.dart';
 import 'package:suvidha/providers/theme_provider.dart';
-import 'package:suvidha/widgets/loading_screen.dart';
 
 import 'orders/add_order_bottom_sheet.dart';
 
@@ -18,7 +17,9 @@ class Dashboard extends StatelessWidget {
       child: RefreshIndicator(
         onRefresh: () => _serviceProvider.getAllServices(),
         child: _serviceProvider.loading
-            ? const LoadingScreen()
+            ? const Center(
+                child: CircularProgressIndicator(),
+              )
             : _serviceProvider.services.isEmpty
                 ? Center(
                     child: Column(
@@ -68,7 +69,7 @@ class Dashboard extends StatelessWidget {
                               crossAxisCount: 3,
                               crossAxisSpacing: 2,
                               mainAxisSpacing: 2,
-                              childAspectRatio: 1,
+                              childAspectRatio: 0.92,
                             ),
                             itemBuilder: (context, index) {
                               final serviceName =

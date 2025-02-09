@@ -35,8 +35,8 @@ class AddOrderBottomSheetProvider extends ChangeNotifier {
       longitudeLatitude: LongitudeLatitudeModel(
         type: 'Point',
         coordinates: [
-          _locationProvider.currentPosition?.longitude ?? 0.0,
           _locationProvider.currentPosition?.latitude ?? 0.0,
+          _locationProvider.currentPosition?.longitude ?? 0.0,
         ],
       ),
       location: _locationProvider.currentAddress ?? '',
